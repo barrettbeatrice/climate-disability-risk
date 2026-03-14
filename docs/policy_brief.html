@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Policy Brief — Electricity-Dependent Disability and Climate Hazard Convergence</title>
+  <style>
+    /* ── Reset & base ─────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Georgia", serif;
+      font-size: 11pt;
+      line-height: 1.65;
+      color: #1a1a1a;
+      background: #f0ece6;
+      padding: 2rem 1rem;
+    }
+
+    /* ── Page container — simulates a letter-sized page ──────────────────── */
+    .page {
+      max-width: 780px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 2.6rem 3rem 2.8rem;
+      box-shadow: 0 2px 18px rgba(0,0,0,0.12);
+      border-top: 5px solid #8b1a1a;
+    }
+
+    /* ── Header ──────────────────────────────────────────────────────────── */
+    .header {
+      border-bottom: 2px solid #8b1a1a;
+      padding-bottom: 1rem;
+      margin-bottom: 1.4rem;
+    }
+
+    .label-pill {
+      display: inline-block;
+      background: #8b1a1a;
+      color: #fff;
+      font-family: "Arial", sans-serif;
+      font-size: 7.5pt;
+      font-weight: bold;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.65rem;
+      border-radius: 2px;
+      margin-bottom: 0.75rem;
+    }
+
+    h1 {
+      font-size: 14.5pt;
+      font-weight: bold;
+      line-height: 1.3;
+      color: #1a1a1a;
+      margin-bottom: 0.45rem;
+    }
+
+    .subtitle {
+      font-size: 11pt;
+      font-style: italic;
+      color: #444;
+      margin-bottom: 0.75rem;
+    }
+
+    .meta {
+      font-family: "Arial", sans-serif;
+      font-size: 8.5pt;
+      color: #555;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem 1.6rem;
+    }
+
+    .meta span::before {
+      content: "▸ ";
+      color: #8b1a1a;
+      font-size: 7.5pt;
+    }
+
+    /* ── Two-column body layout ───────────────────────────────────────────── */
+    .body-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 2rem;
+      margin-top: 0.2rem;
+    }
+
+    /* ── Section blocks ───────────────────────────────────────────────────── */
+    .section {
+      margin-bottom: 1.15rem;
+    }
+
+    /* Full-width section spans both columns */
+    .section.full-width {
+      grid-column: 1 / -1;
+    }
+
+    h2 {
+      font-family: "Arial", sans-serif;
+      font-size: 7.8pt;
+      font-weight: bold;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #8b1a1a;
+      border-bottom: 1px solid #d9b3b3;
+      padding-bottom: 0.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      font-size: 10pt;
+      text-align: justify;
+      hyphens: auto;
+      margin-bottom: 0.5rem;
+    }
+
+    ul {
+      margin: 0.3rem 0 0.3rem 0;
+      padding-left: 0;
+      list-style: none;
+    }
+
+    ul li {
+      font-size: 10pt;
+      padding: 0.28rem 0 0.28rem 1.2rem;
+      position: relative;
+      border-bottom: 1px dotted #e0d0d0;
+      text-align: justify;
+      hyphens: auto;
+    }
+
+    ul li:last-child { border-bottom: none; }
+
+    ul li::before {
+      content: "■";
+      color: #8b1a1a;
+      font-size: 6pt;
+      position: absolute;
+      left: 0;
+      top: 0.45rem;
+    }
+
+    /* ── Map figure ───────────────────────────────────────────────────────── */
+    .figure-block {
+      grid-column: 1 / -1;
+      margin: 0.8rem 0 0.5rem;
+      text-align: center;
+    }
+
+    .figure-block img {
+      width: 100%;
+      max-width: 700px;
+      border: 1px solid #ccc;
+      display: block;
+      margin: 0 auto 0.4rem;
+    }
+
+    .fig-caption {
+      font-family: "Arial", sans-serif;
+      font-size: 8pt;
+      color: #555;
+      font-style: italic;
+      text-align: center;
+    }
+
+    /* ── Callout box ──────────────────────────────────────────────────────── */
+    .callout {
+      background: #fdf5f5;
+      border-left: 4px solid #8b1a1a;
+      padding: 0.65rem 0.9rem;
+      margin: 0.6rem 0;
+      border-radius: 0 3px 3px 0;
+    }
+
+    .callout p {
+      font-size: 9.5pt;
+      margin: 0;
+      font-style: italic;
+      color: #2a0000;
+    }
+
+    /* ── Footer ───────────────────────────────────────────────────────────── */
+    .footer {
+      grid-column: 1 / -1;
+      border-top: 1px solid #ccc;
+      margin-top: 1rem;
+      padding-top: 0.6rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .footer-left {
+      font-family: "Arial", sans-serif;
+      font-size: 7.5pt;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    .footer-right {
+      font-family: "Arial", sans-serif;
+      font-size: 7.5pt;
+      color: #888;
+      text-align: right;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── HEADER ──────────────────────────────────────────────────────────── -->
+  <div class="header">
+    <div class="label-pill">Policy Brief</div>
+    <h1>Electricity-Dependent Disability and Climate Hazard Convergence:<br>A County-Level Risk Analysis</h1>
+    <div class="subtitle">Informing Rehabilitation Preparedness Policy in an Era of Climate Change</div>
+    <div class="meta">
+      <span>Barrett Jackson | Alexander Lab, Marcus Neuroscience Institute, Baptist Health South Florida</span>
+      <span>March 2026</span>
+    </div>
+  </div>
+
+  <!-- ── BODY (two-column grid) ──────────────────────────────────────────── -->
+  <div class="body-columns">
+
+    <!-- SECTION 1 — THE PROBLEM -->
+    <div class="section">
+      <h2>The Problem</h2>
+      <p>People with spinal cord injuries and other disabilities requiring electricity-dependent medical equipment face compounding vulnerability during climate events: physiological inability to thermoregulate combined with dependence on powered devices such as ventilators, oxygen concentrators, and powered wheelchairs. When extreme weather events cause power outages, this population faces life-threatening risk that current disaster preparedness frameworks do not adequately address. No published study has systematically mapped where these populations are most concentrated relative to climate hazard exposure.</p>
+    </div>
+
+    <!-- SECTION 2 — THE ANALYSIS -->
+    <div class="section">
+      <h2>The Analysis</h2>
+      <p>This analysis joins two federal datasets — the FEMA National Risk Index and the HHS emPOWER Map — at the county level across 3,144 US counties to calculate a composite vulnerability index combining climate hazard exposure and electricity-dependent DME utilization rates. Hazard scores incorporate hurricane, heat wave, wildfire, coastal flood, and drought risk. Power dependency rates are normalized by county Medicare population to control for county size. The resulting vulnerability index identifies counties where climate hazard and disability power dependency converge most severely.</p>
+    </div>
+
+    <!-- MAP — full width -->
+    <div class="figure-block section">
+      <img src="../visualizations/vulnerability_map.png"
+           alt="Choropleth map of county-level climate-disability vulnerability index across the continental United States" />
+      <div class="fig-caption">
+        <strong>Figure 1.</strong> County-level Vulnerability Index (0–100) combining FEMA National Risk Index composite hazard scores
+        and HHS emPOWER electricity-dependent Medicare beneficiary rates. Darker red = higher convergent risk.
+        Source: FEMA NRI v1.20 (Dec 2025) + HHS emPOWER Map (Mar 2026).
+      </div>
+    </div>
+
+    <!-- SECTION 3 — KEY FINDINGS -->
+    <div class="section">
+      <h2>Key Findings</h2>
+      <div class="callout">
+        <p>Palm Beach and Miami-Dade counties fall within the national top 10 for convergent risk — placing Baptist Health's primary service area among the highest-risk jurisdictions in the country.</p>
+      </div>
+      <ul>
+        <li>San Joaquin Valley counties dominate the top national rankings, driven by extreme wildfire, heat, and drought scores in the 97th–99th national percentile.</li>
+        <li>San Juan County, NM presents a distinct risk profile with the highest power dependency rate in the top 20 (11.8%), identifying high dependency as an independent vulnerability pathway separate from hazard exposure.</li>
+        <li>Two distinct risk pathways identified: extreme climate hazard exposure (California) and extreme power dependency concentration (rural Southwest).</li>
+      </ul>
+    </div>
+
+    <!-- SECTION 4 — POLICY IMPLICATIONS -->
+    <div class="section">
+      <h2>Policy Implications</h2>
+      <p>These findings support targeted telerehabilitation infrastructure investment in highest-risk counties as a climate adaptation strategy, consistent with recommendations in Alexander &amp; Alexander (2025). Counties in the top vulnerability quartile should be prioritized for disaster preparedness protocols specific to electricity-dependent disabled populations. Phase 2 of this analysis will extend the framework internationally using WHO rehabilitation access data and IPCC regional climate projections.</p>
+    </div>
+
+    <!-- SECTION 5 — NEXT STEPS -->
+    <div class="section">
+      <h2>Next Steps</h2>
+      <ul>
+        <li>International extension using WHO rehabilitation data and World Bank electricity access indicators to identify high-risk regions globally.</li>
+        <li>Qualitative interviews with SCI clinicians in top-10 counties to characterize existing emergency preparedness protocols and identify gaps.</li>
+        <li>Integration of NOAA historical power outage duration data to weight the vulnerability index by realized infrastructure fragility.</li>
+        <li>Dissemination to county emergency management offices in the top vulnerability quartile via targeted policy brief distribution.</li>
+        <li>Submission of findings to the <em>Journal of Spinal Cord Medicine</em> and the <em>Journal of Climate Change and Health</em>.</li>
+      </ul>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      <div class="footer-left">
+        <strong>Data &amp; Code:</strong> github.com/barrettbeatrice/climate-disability-risk<br>
+        <strong>Analysis:</strong> Python 3.9 · pandas · geopandas · matplotlib · HHS emPOWER ArcGIS REST API<br>
+        <strong>Reference:</strong> Luyten et al., <em>Journal of Climate Change and Health</em>, 2023 — scoping review of 89 climate-health studies across 35 countries; zero stratified by disability status.
+      </div>
+      <div class="footer-right">
+        Alexander Lab · Marcus Neuroscience Institute<br>
+        Baptist Health South Florida<br>
+        March 2026
+      </div>
+    </div>
+
+  </div><!-- /.body-columns -->
+</div><!-- /.page -->
+</body>
+</html>
