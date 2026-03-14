@@ -13,8 +13,15 @@ __pycache__/
 # Jupyter
 .jupyter/
 
-# Data files (often too large for git)
-data/*.csv
-data/*.xlsx
+# Raw source data (large downloads — regenerate via notebooks)
 data/*.zip
-data/*.geojson
+data/*.xlsx
+data/cb_2022_us_county_5m/
+data/NRI_Table_Counties.csv
+data/NRI_HazardInfo.csv
+data/NRIDataDictionary.csv
+data/NRI_metadata_December2025.pdf
+data/MUP_DME_RY24_DY22_GEO.csv
+
+# Derived/cleaned data IS tracked (small, reproducible outputs)
+# fema_hazard_clean.csv, cms_dme_clean.csv, climate_disability_vulnerability.csv
