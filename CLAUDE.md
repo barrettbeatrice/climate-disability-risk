@@ -2,18 +2,32 @@
 
 ## Project Context
 This is a research project supporting Dr. Marcalee Alexander's 
-grant on climate change effects on people with disabilities, 
-specifically spinal cord injuries, at Baptist Health / Marcus 
-Neuroscience Institute, Boca Raton.
+grant on climate change effects on people with disabilities at 
+Baptist Health / Marcus Neuroscience Institute, Boca Raton.
 
-The project maps electricity-dependent disability populations 
+The clinical grant focuses on persons with spinal cord injuries 
+(SCI). This geospatial analysis uses the best available public 
+federal data — which identifies **electricity-dependent Medicare 
+beneficiaries** as an aggregate population (including SCI, ALS, 
+COPD, neuromuscular disease, and other conditions requiring 
+powered DME). SCI is the motivating clinical lens: it frames 
+device selection, distance thresholds, climate-hazard prioritization, 
+and policy interpretation. SCI cannot be isolated from this data 
+without access to claims-level files through a CMS Data Use 
+Agreement (ResDAC), which is out of scope for this phase. All 
+quantitative findings describe the electricity-dependent 
+Medicare population; SCI-specific conclusions are drawn 
+cautiously and triangulated with the clinical study arm.
+
+The project maps electricity-dependent Medicare populations 
 against climate hazard exposure at the county level (US) and 
 WHO region level (international).
 
 ## Research Question
-Which US counties and international regions have the highest 
-convergent risk for electricity-dependent disabled populations 
-during climate-related power disruption events?
+Across US counties and international regions, how does convergent 
+climate-and-disability risk differ for electricity-dependent 
+Medicare populations — and how do these populations adapt to 
+climate exposure differently across locales and metropolitan areas?
 
 ## Primary Data Sources
 - CMS Medicare DME Dataset (data.cms.gov) — county-level, 

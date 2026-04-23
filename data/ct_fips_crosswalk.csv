@@ -1,0 +1,19 @@
+legacy_fips,legacy_county,new_fips,new_planning_region,notes
+09003,Hartford,09110,Capitol,Hartford metro area towns
+09013,Tolland,09110,Capitol,"Western Tolland towns (Vernon, Ellington, etc.)"
+09001,Fairfield,09120,Greater Bridgeport,"Bridgeport, Stratford, Trumbull, Monroe, Easton, Shelton"
+09007,Middlesex,09130,Lower CT River Valley,Most Middlesex towns
+09009,New Haven,09130,Lower CT River Valley,"Killingworth, Durham from New Haven County"
+09001,Fairfield,09140,Naugatuck Valley,"Ansonia, Derby, Seymour, Oxford, Beacon Falls"
+09009,New Haven,09140,Naugatuck Valley,"Waterbury, Naugatuck, Cheshire, Wolcott, Prospect, Bethany"
+09005,Litchfield,09140,Naugatuck Valley,"Thomaston, Plymouth from Litchfield County"
+09015,Windham,09150,Northeastern CT,Most Windham towns
+09013,Tolland,09150,Northeastern CT,"Eastern Tolland towns (Stafford, Union, Willington)"
+09005,Litchfield,09160,Northwest Hills,Most Litchfield County towns
+09003,Hartford,09160,Northwest Hills,"Hartland, Granby from Hartford County"
+09009,New Haven,09170,South Central CT,"New Haven, Hamden, West Haven, Milford, etc."
+09007,Middlesex,09170,South Central CT,Clinton from Middlesex County
+09011,New London,09180,Southeastern CT,All New London County towns
+09007,Middlesex,09180,Southeastern CT,"Old Saybrook, Westbrook from Middlesex County"
+09001,Fairfield,09190,Western CT,"Danbury, Newtown, Ridgefield, Bethel, etc."
+09005,Litchfield,09190,Western CT,"New Milford, Sherman from Litchfield County"

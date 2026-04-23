@@ -23,5 +23,20 @@ data/NRIDataDictionary.csv
 data/NRI_metadata_December2025.pdf
 data/MUP_DME_RY24_DY22_GEO.csv
 
+# Node build artifacts (docx-js toolchain for /docs generation)
+notebooks/node_modules/
+notebooks/package-lock.json
+
+# Sibling raw-download archives (kept locally, not tracked)
+/Climate and Disabilities: Medicare Focus copy/
+/Marcalee Climate Health copy/
+/Medicare Monthly Enrollment copy/
+/Medicare Variable Expansion--ReadMe-Markdown copy.docx
+/Renaissance_in_Italy_8Day_Unit.pptx
+
+# Claude working directory (local only)
+.claude/worktrees/
+
 # Derived/cleaned data IS tracked (small, reproducible outputs)
 # fema_hazard_clean.csv, cms_dme_clean.csv, climate_disability_vulnerability.csv
+# part1_analysis_ready.csv, mme_dec2025_county_clean.csv, ct_fips_crosswalk.csv
