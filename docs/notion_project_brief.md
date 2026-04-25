@@ -28,28 +28,32 @@ No published study has systematically mapped where these populations are most co
 | WHO Rehabilitation Data | who.int | International extension — Phase 2 | Global |
 
 ## Methods
-- **Composite Hazard Score** — mean of five FEMA RISKS scores: hurricane, heat wave, wildfire, coastal flood, drought. Coastal flood excluded for inland counties rather than treated as zero.
+- **Composite Hazard Score** — mean of five FEMA RISKS scores (grid-disruptive hazards): hurricane, heat wave, wildfire, coastal flood, drought. Coastal flood excluded for inland counties rather than treated as zero.
 - **Power Dependency Rate** — total electricity-dependent DME beneficiaries ÷ total Medicare beneficiaries × 100. Normalized by county Medicare population.
-- **Vulnerability Index** — mean of composite hazard score and power dependency rate (both on 0–100 scales).
+- **Vulnerability Index (dual-percentile)** — equal-weighted mean of (a) the national percentile rank of the composite hazard score and (b) the national percentile rank of the power-dependency rate. Dual-percentile rescaling is necessary because the raw hazard score spans 0–100 while the raw power-dependency rate spans roughly 0–40%; averaging the raw values would under-weight power dependency by ~15×.
 
 ## Key Findings
-- **3,144 counties** successfully scored out of 3,232 (88 excluded — insufficient FEMA hazard data)
-- **San Joaquin Valley** counties dominate top rankings (wildfire/heat/drought at 97th–99th percentile)
-- **Palm Beach and Miami-Dade rank in the national top 10** — placing Baptist Health's primary service area within the highest-risk zone in the country
-- **Two distinct risk pathways**: (a) extreme climate hazard exposure (California), (b) extreme power dependency concentration (rural Southwest)
-- **San Juan County NM** — highest power dependency rate in the top 20 (11.8%)
-- **5 counties suppressed** in emPOWER due to HIPAA cell-size masking (1–10 counts)
+- **3,131 counties** successfully scored out of 3,212 joined (81 excluded — insufficient FEMA hazard data; 5 additional suppressed under HIPAA cell-size rules)
+- **Intermountain West / Four Corners corridor** dominates the national ranking — all 10 top-ranked counties sit in New Mexico, Colorado, or Utah
+- **Two distinct risk profiles**:
+  - **(a) Intermountain drought-and-dependency corridor** — the dominant top-10 pattern
+  - **(b) Southeast hurricane-and-coastal-flood coast** — Palm Beach (hazard percentile 99.8) and Miami-Dade (99.7) sit in the top 1% of US counties on hazard exposure, making Baptist Health South Florida the highest-climate-hazard-exposed major hospital system in the Southeast
+- **Power dependency operates as an independent pathway** — Pueblo CO, Iron UT, Millard UT, and Garfield UT reach top-25 positions on moderate hazard scores paired with power-dependency rates near the national ceiling
+- **San Juan County, NM** leads the nation (vulnerability index 96.9) on both dimensions simultaneously
 
-### Top 10 Most Vulnerable Counties
-| Rank | County | State | Hazard | Power Dep. | Vuln. Index |
+### Top 10 Most Vulnerable Counties (dual-percentile)
+| Rank | County | State | Hazard pctile | Power pctile | Vuln. Index |
 |---|---|---|---|---|---|
-| 1 | Kern | CA | 97.9 | 5.7% | 51.8 |
-| 2 | Fresno | CA | 98.8 | 4.3% | 51.5 |
-| 3 | Madera | CA | 99.0 | 4.0% | 51.5 |
-| 7 | San Joaquin | CA | 96.4 | 3.7% | 50.0 |
-| **8** | **Palm Beach** | **FL** | **96.2** | **2.7%** | **49.5** |
-| **9** | **Miami-Dade** | **FL** | **95.0** | **4.0%** | **49.5** |
-| 10 | San Juan | NM | 86.8 | 11.8% | 49.3 |
+| 1 | San Juan | NM | 98.3 | 95.6 | 96.9 |
+| 2 | El Paso | CO | 92.0 | 97.1 | 94.5 |
+| 3 | Bernalillo | NM | 97.4 | 91.0 | 94.2 |
+| 4 | Sandoval | NM | 97.2 | 91.1 | 94.1 |
+| 5 | Adams | CO | 92.0 | 95.6 | 93.8 |
+| 6 | Chaves | NM | 96.4 | 90.4 | 93.4 |
+| 7 | Utah | UT | 98.4 | 88.2 | 93.3 |
+| 8 | Mesa | CO | 92.6 | 93.3 | 92.9 |
+| 9 | Santa Fe | NM | 95.7 | 89.7 | 92.7 |
+| 10 | Weber | UT | 91.4 | 93.7 | 92.6 |
 
 ## Planned Extensions
 - **Phase 2 — International**: WHO rehabilitation access + World Bank electricity access + IPCC regional temperature projections, integrated with InSCI community survey (31 countries, 15,051 participants, 2022–2024).

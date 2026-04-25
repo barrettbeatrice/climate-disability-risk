@@ -251,8 +251,8 @@ sections.push(
   P("From the FEMA NRI v1.20, extract the county-level RISKS scores for the five hazard types most capable of disrupting the electrical grid and climate-controlled housing: hurricanes, heat waves, wildfires, coastal flooding, and drought. Compute the composite hazard score as the mean of the applicable scores, with coastal flood excluded for inland counties rather than treated as zero (to prevent artificial score suppression for high-risk inland jurisdictions)."),
   H2("2. Power-dependence signature."),
   P("For each county, compute the six covariates as per-100-beneficiary rates. Rank each covariate to its national percentile to put the six signatures on a common 0\u2013100 scale."),
-  H2("3. Convergent-risk index."),
-  P("Compute an equal-weighted convergent-risk index as the mean of (a) the national percentile of the power-dependent DME rate and (b) the composite hazard score. Counties scoring in the top quartile on both dimensions are flagged as priority jurisdictions for preparedness intervention."),
+  H2("3. Convergent-risk index (dual-percentile)."),
+  P("Compute the equal-weighted convergent-risk index as the mean of two national percentile ranks: (a) the percentile rank of the county\u2019s composite 5-hazard score, and (b) the percentile rank of the county\u2019s power-dependent DME rate. Both inputs are rescaled to 0\u2013100 before averaging; this is necessary because the raw composite hazard score spans 0\u2013100 while the raw power-dependency rate spans approximately 0\u201340% (median ~5%), so averaging the raw values would under-weight power dependency by roughly 15-fold and artificially privilege high-hazard California counties. Under the dual-percentile formulation, a county ranks highest when it scores near the national top on both dimensions simultaneously. Counties scoring in the top quartile on both dimensions are flagged as priority jurisdictions for preparedness intervention."),
   H2("4. Covariate-specific vulnerability maps."),
   P("Render a choropleth map for each of the six covariates individually against the composite hazard score, so that policymakers can see whether a county\u2019s risk is driven by high-DME-dependency populations, high home-health intensity, high disability enrollment, or a combination."),
   H2("5. Sensitivity checks."),
@@ -262,12 +262,68 @@ sections.push(
 // ===== PRELIMINARY FINDINGS =====
 sections.push(
   H1("Preliminary Findings"),
-  P("Phase 1 analysis of 3,131 matched counties (out of 3,212 total; 81 excluded due to insufficient FEMA hazard data, 5 additional counties suppressed under HIPAA cell-size rules) produces three findings of immediate policy relevance:"),
-  BULLET("San Joaquin Valley, California dominates the top national rankings. Kern, Fresno, and Madera counties occupy the top three positions on the convergent-risk index (scores 51.8, 51.5, and 51.5 respectively), driven by wildfire, drought, and heat scores at the 97th\u201399th national percentile combined with a Medicare population that includes a meaningful share of electricity-dependent device users."),
-  BULLET("Baptist Health\u2019s primary service area falls in the national top 10. Palm Beach (rank 8) and Miami-Dade (rank 9) are identified by hurricane and coastal-flood exposure convergent with Medicare populations whose power-dependency rates sit above the national median. This places the grant-holder institution geographically within one of the highest-risk zones the analysis identifies \u2014 a finding with direct relevance for Baptist Health\u2019s disaster-preparedness planning."),
-  BULLET("A second, distinct risk pathway emerges in the rural Southwest. San Juan County, NM and El Paso, Pueblo, and Adams counties, CO rank in the top 20 despite moderate hazard scores, driven entirely by electrically-dependent Medicare populations exceeding 11% of the total Medicare enrollment. This shows that extreme power dependency operates as an independent vulnerability pathway, not merely an amplifier of extreme hazard exposure."),
-  CALLOUT("Together, these findings identify two geographically and mechanistically distinct categories of highest-risk county \u2014 high-hazard coastal/wildfire states, and high-dependency rural-Southwest states \u2014 each of which requires a different preparedness response."),
+  P("Phase 1 analysis of 3,131 matched counties (out of 3,212 total joined; 81 excluded due to insufficient FEMA hazard data, 5 additional counties suppressed under HIPAA cell-size rules) produces three findings of immediate policy relevance:"),
+  BULLET("The Intermountain West / Four Corners corridor dominates the national convergent-risk ranking. San Juan, NM leads the nation (index 96.9), with El Paso, CO (94.5), Bernalillo, NM (94.2), Sandoval, NM (94.1), and Adams, CO (93.8) completing the top five. All ten of the top-ranked counties sit in New Mexico, Colorado, or Utah \u2014 a corridor jointly exposed to drought, heat wave, and wildfire hazard at or above the 90th national percentile and carrying power-dependent Medicare populations in the top decile. This is the region where structural power-dependency and grid-disruptive climate hazard converge most sharply."),
+  BULLET("A second, distinct risk profile emerges along the Southeast coast \u2014 and directly within Baptist Health\u2019s primary service area. Palm Beach (hazard percentile 99.8) and Miami-Dade (99.7) sit in the top 1% of US counties on the composite hazard score, driven by hurricane and coastal-flood exposure, making Baptist Health South Florida the highest-climate-hazard-exposed major hospital system in the Southeast. Their convergent-risk ranks (1,558 and 1,013 respectively) are held below the Intermountain West only because South Florida\u2019s Medicare power-dependency rate sits in the bottom tercile nationally \u2014 a profile of extreme climate exposure convergent with moderate device-dependency. The finding nonetheless places the grant-holder institution at the frontline of the hurricane/coastal-flood pathway and identifies it as the largest-scale US hospital system operating in a top-1%-hazard environment."),
+  BULLET("Power dependency operates as an independent vulnerability pathway. Several counties in the top 25 \u2014 including Pueblo, CO (rank 12, hazard 86.7 / power 98.2), Iron, UT (rank 13, hazard 87.0 / power 97.5), Millard, UT (rank 14, hazard 86.9 / power 97.0), and Garfield, UT (rank 21, hazard 82.1 / power 98.9) \u2014 reach top-ranked positions on moderate hazard scores but extreme power-dependency rates near the national ceiling. This confirms that electricity-dependent disability cannot be treated as a secondary amplifier of climate exposure; in multiple US regions it is itself the dominant driver of disaster risk."),
+  CALLOUT("Together, these findings identify two geographically and mechanistically distinct categories of highest-risk county \u2014 the Intermountain West drought-and-dependency corridor, and the Southeast hurricane-and-coastal-flood coast including Baptist Health\u2019s service area \u2014 each of which requires a different preparedness response."),
+  H2("Top 10 counties by convergent-risk index (dual-percentile)"),
 );
+
+sections.push(new Table({
+  width: { size: 9360, type: WidthType.DXA },
+  columnWidths: [600, 2600, 1800, 1400, 1480, 1480],
+  rows: [
+    new TableRow({ tableHeader: true, children: [
+      cell("#", { head: true, width: 600 }),
+      cell("County", { head: true, width: 2600 }),
+      cell("State", { head: true, width: 1800 }),
+      cell("Hazard pctile", { head: true, width: 1400 }),
+      cell("Power pctile", { head: true, width: 1480 }),
+      cell("Vuln. index", { head: true, width: 1480 }),
+    ]}),
+    new TableRow({ children: [
+      cell("1", { width: 600 }), cell("San Juan", { width: 2600 }), cell("NM", { width: 1800 }),
+      cell("98.3", { width: 1400 }), cell("95.6", { width: 1480 }), cell("96.9", { width: 1480 }),
+    ]}),
+    new TableRow({ children: [
+      cell("2", { width: 600 }), cell("El Paso", { width: 2600 }), cell("CO", { width: 1800 }),
+      cell("92.0", { width: 1400 }), cell("97.1", { width: 1480 }), cell("94.5", { width: 1480 }),
+    ]}),
+    new TableRow({ children: [
+      cell("3", { width: 600 }), cell("Bernalillo", { width: 2600 }), cell("NM", { width: 1800 }),
+      cell("97.4", { width: 1400 }), cell("91.0", { width: 1480 }), cell("94.2", { width: 1480 }),
+    ]}),
+    new TableRow({ children: [
+      cell("4", { width: 600 }), cell("Sandoval", { width: 2600 }), cell("NM", { width: 1800 }),
+      cell("97.2", { width: 1400 }), cell("91.1", { width: 1480 }), cell("94.1", { width: 1480 }),
+    ]}),
+    new TableRow({ children: [
+      cell("5", { width: 600 }), cell("Adams", { width: 2600 }), cell("CO", { width: 1800 }),
+      cell("92.0", { width: 1400 }), cell("95.6", { width: 1480 }), cell("93.8", { width: 1480 }),
+    ]}),
+    new TableRow({ children: [
+      cell("6", { width: 600 }), cell("Chaves", { width: 2600 }), cell("NM", { width: 1800 }),
+      cell("96.4", { width: 1400 }), cell("90.4", { width: 1480 }), cell("93.4", { width: 1480 }),
+    ]}),
+    new TableRow({ children: [
+      cell("7", { width: 600 }), cell("Utah", { width: 2600 }), cell("UT", { width: 1800 }),
+      cell("98.4", { width: 1400 }), cell("88.2", { width: 1480 }), cell("93.3", { width: 1480 }),
+    ]}),
+    new TableRow({ children: [
+      cell("8", { width: 600 }), cell("Mesa", { width: 2600 }), cell("CO", { width: 1800 }),
+      cell("92.6", { width: 1400 }), cell("93.3", { width: 1480 }), cell("92.9", { width: 1480 }),
+    ]}),
+    new TableRow({ children: [
+      cell("9", { width: 600 }), cell("Santa Fe", { width: 2600 }), cell("NM", { width: 1800 }),
+      cell("95.7", { width: 1400 }), cell("89.7", { width: 1480 }), cell("92.7", { width: 1480 }),
+    ]}),
+    new TableRow({ children: [
+      cell("10", { width: 600 }), cell("Weber", { width: 2600 }), cell("UT", { width: 1800 }),
+      cell("91.4", { width: 1400 }), cell("93.7", { width: 1480 }), cell("92.6", { width: 1480 }),
+    ]}),
+  ],
+}));
 
 // ===== POLICY RELEVANCE =====
 sections.push(

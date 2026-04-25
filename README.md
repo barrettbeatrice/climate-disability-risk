@@ -33,7 +33,7 @@ The theoretical framing draws from Chapter 4 of Alexander & Alexander (2025, Els
 
 ### Part 1: Aggregate Vulnerability Analysis (Complete)
 
-Six Medicare variables measuring electricity-dependent population density are joined with nine FEMA National Risk Index hazard scores across approximately 3,200 US counties. A percentile-rank rescaled vulnerability index identifies counties where high population dependence and high climate hazard exposure co-occur.
+Six Medicare variables measuring electricity-dependent population density are joined with FEMA National Risk Index hazard scores across 3,212 US counties (3,131 scored on the headline vulnerability index; 81 counties excluded due to insufficient FEMA hazard data; 5 counties suppressed under HIPAA cell-size rules). A dual-percentile rescaled vulnerability index identifies counties where high population dependence and high grid-disruptive climate hazard exposure co-occur.
 
 **Medicare Variables (Part 1):**
 
@@ -46,9 +46,11 @@ Six Medicare variables measuring electricity-dependent population density are jo
 | `any_healthcare_rate` | HHS emPOWER | Any electricity-dependent healthcare beneficiaries per 100 Medicare beneficiaries |
 | `dsbld_rate` | MME Dec 2025 | Disabled (under-65) Medicare beneficiaries per 100 total beneficiaries |
 
-**FEMA NRI Hazard Types (9):**
+**FEMA NRI Hazard Types:**
 
-Hurricane (HRCN), Heat Wave (HWAV), Wildfire (WFIR), Coastal Flood (CFLD), Drought (DRGT), Cold Wave (CWAV), Inland Flood (IFLD), Winter Weather (WNTW), Ice Storm (ISTM)
+The headline vulnerability index uses the *5-hazard grid-disruptive composite*: Hurricane (HRCN), Heat Wave (HWAV), Wildfire (WFIR), Coastal Flood (CFLD), Drought (DRGT). These are the hazards most capable of disrupting the electrical grid and climate-controlled housing on which electricity-dependent Medicare populations depend.
+
+The per-covariate diagnostic choropleths and correlation heatmap additionally include Cold Wave (CWAV), Inland Flood (IFLD), Winter Weather (WNTW), and Ice Storm (ISTM) — giving a 9-hazard view used only for secondary diagnostic analysis.
 
 ### Part 2: Adaptation-Pattern Typology (In Progress)
 
@@ -74,17 +76,19 @@ All Medicare rate variables are percentile-rank rescaled (0–100) rather than m
 
 ### Composite Hazard Score
 
-The composite hazard score is the mean of all applicable FEMA NRI RISK scores across the nine hazard types. Coastal flood is excluded from the composite for inland counties (those carrying no coastal exposure) rather than treated as zero, preventing artificial score suppression for high-risk inland jurisdictions.
+The headline composite hazard score is the mean of the five FEMA NRI RISK scores for grid-disruptive hazards: hurricane, heat wave, wildfire, coastal flood, and drought. Coastal flood is excluded from the composite for inland counties (those carrying no coastal exposure) rather than treated as zero, preventing artificial score suppression for high-risk inland jurisdictions.
 
-### Vulnerability Index
+### Vulnerability Index (dual-percentile)
 
-For each of the six Medicare variables, a vulnerability index is computed as:
+The headline convergent-risk index is the equal-weighted mean of two national percentile ranks:
 
 ```
-vuln_V = (composite_hazard_score_rescaled + V_rate_rescaled) / 2
+vulnerability_index = (hazard_percentile + power_dependency_percentile) / 2
 ```
 
-This equal-weighted average identifies counties where both dimensions — climate hazard exposure and population dependence — are simultaneously elevated.
+where `hazard_percentile` is the national percentile rank of the county's composite 5-hazard score and `power_dependency_percentile` is the national percentile rank of the county's power-dependent DME rate. Both inputs are rescaled to 0–100 before averaging; this is necessary because the raw composite hazard score spans 0–100 while the raw power-dependency rate spans approximately 0–40% (median ≈ 5%), so averaging the raw values would under-weight power dependency by roughly 15-fold. Under the dual-percentile formulation, a county ranks highest only when both dimensions — climate hazard exposure and population dependence — are simultaneously elevated.
+
+For each of the six Medicare variables individually, a diagnostic vulnerability choropleth is additionally rendered using the broader 9-hazard composite from part1 as a secondary lens; these maps are for covariate-by-covariate pattern inspection only and do not override the headline dual-percentile index.
 
 ### Regression Specification
 
@@ -97,19 +101,42 @@ The disability rate (`dsbld_rate`) from the Medicare Monthly Enrollment file ser
 
 ## Key Findings (Part 1)
 
-**Regional shift with disability rate inclusion.** The addition of `dsbld_rate` from the Medicare Monthly Enrollment file shifts the convergent risk geography from California's San Joaquin Valley (which dominated the original power-dependency-only ranking) toward the Gulf Coast and Deep South. California's low state-level disability rate (7.05%) suppresses those counties' combined vulnerability scores, while high-disability states in the Southeast rise.
+**The Intermountain West / Four Corners corridor dominates the national convergent-risk ranking.** Under the dual-percentile methodology, San Juan, NM leads the nation (vulnerability index 96.9), followed by El Paso, CO (94.5), Bernalillo, NM (94.2), Sandoval, NM (94.1), and Adams, CO (93.8). All ten of the top-ranked counties sit in New Mexico, Colorado, or Utah — a corridor jointly exposed to drought, heat wave, and wildfire hazard at or above the 90th national percentile and carrying power-dependent Medicare populations in the top decile. This is the region where structural power-dependency and grid-disruptive climate hazard converge most sharply.
+
+**Top 10 counties (dual-percentile convergent-risk index):**
+
+| # | County | State | Hazard pctile | Power pctile | Vulnerability index |
+|---|--------|-------|---------------|--------------|---------------------|
+| 1 | San Juan | NM | 98.3 | 95.6 | 96.9 |
+| 2 | El Paso | CO | 92.0 | 97.1 | 94.5 |
+| 3 | Bernalillo | NM | 97.4 | 91.0 | 94.2 |
+| 4 | Sandoval | NM | 97.2 | 91.1 | 94.1 |
+| 5 | Adams | CO | 92.0 | 95.6 | 93.8 |
+| 6 | Chaves | NM | 96.4 | 90.4 | 93.4 |
+| 7 | Utah | UT | 98.4 | 88.2 | 93.3 |
+| 8 | Mesa | CO | 92.6 | 93.3 | 92.9 |
+| 9 | Santa Fe | NM | 95.7 | 89.7 | 92.7 |
+| 10 | Weber | UT | 91.4 | 93.7 | 92.6 |
+
+**A second, distinct risk profile emerges along the Southeast coast — directly within Baptist Health's primary service area.** Palm Beach (hazard percentile 99.8) and Miami-Dade (99.7) sit in the top 1% of US counties on the composite hazard score, driven by hurricane and coastal-flood exposure, making Baptist Health South Florida the highest-climate-hazard-exposed major hospital system in the Southeast. Their convergent-risk ranks (1,558 and 1,013 respectively) are held below the Intermountain West only because South Florida's Medicare power-dependency rate sits in the bottom tercile nationally — a profile of extreme climate exposure convergent with moderate device-dependency. The finding nonetheless places the grant-holder institution at the frontline of the hurricane/coastal-flood pathway.
+
+**Power dependency operates as an independent vulnerability pathway.** Several counties in the top 25 — including Pueblo, CO (rank 12, hazard 86.7 / power 98.2), Iron, UT (rank 13, hazard 87.0 / power 97.5), Millard, UT (rank 14, hazard 86.9 / power 97.0), and Garfield, UT (rank 21, hazard 82.1 / power 98.9) — reach top-ranked positions on moderate hazard scores but extreme power-dependency rates near the national ceiling. This confirms that electricity-dependent disability cannot be treated as a secondary amplifier of climate exposure; in multiple US regions it is itself the dominant driver of disaster risk.
 
 **Disability rate as a distinct construct.** Spearman correlation between `dsbld_rate` and `power_dependency_rate` is ρ = 0.286, confirming that the two variables capture meaningfully different populations. The disability rate variable produces 18 counties in its top-25 that do not appear in any other variable's top-25 — the most distinct of all six indices.
 
 **Negative inland-flood correlations.** The Spearman correlation heatmap reveals negative correlations between most emPOWER variables and inland flood risk scores, suggesting that electricity-dependent populations are not concentrated in inland flood zones. This warrants further investigation in Part 2.
 
-**Cross-index overlap.** The top-25 overlap matrix shows moderate convergence among the five emPOWER-derived indices (sharing 10–20 counties) but limited overlap with the disability-derived index, reinforcing its value as an independent dimension of vulnerability.
-
 ## Visualizations
 
 All visualizations are in `visualizations/` at 300 DPI.
 
-### Choropleth Maps (8)
+### Headline Map
+
+| File | Description |
+|------|-------------|
+| `vulnerability_map.png` | **Headline dual-percentile vulnerability index** (5-hazard composite × power-dependent DME rate), with top-5 counties annotated |
+
+### Diagnostic Choropleths (per-covariate, 9-hazard composite)
 
 County-level maps of the contiguous United States:
 
@@ -161,7 +188,8 @@ climate-disability-risk/
 │   ├── ct_fips_crosswalk.csv              # Connecticut FIPS reorganization crosswalk
 │   ├── part1_analysis_ready.csv           # Merged analysis-ready dataset (3,212 counties × 41 cols)
 │   ├── fema_hazard_clean.csv              # Filtered FEMA hazard scores
-│   ├── climate_disability_vulnerability.csv  # Legacy vulnerability index
+│   ├── climate_disability_vulnerability.csv  # Headline dual-percentile vulnerability index (3,131 counties)
+│   ├── top25_vulnerability_dual_pctile.csv   # Top-25 convergent-risk counties (dual-percentile)
 │   └── cb_2022_us_county_5m/             # Census TIGER shapefiles (county boundaries)
 ├── visualizations/
 │   ├── choropleth_vuln_power_dependency.png
