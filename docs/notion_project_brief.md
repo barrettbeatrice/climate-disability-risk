@@ -14,6 +14,8 @@ Alexander Lab · Marcus Neuroscience Institute · Baptist Health South Florida �
 ## Research Question (Part 1)
 Which US counties have the highest convergent risk for electricity-dependent disabled populations during climate-related power disruption, and what structural factors differentiate high-risk from low-risk counties?
 
+Part 1 is a static, cross-sectional geospatial analysis: it maps *where* convergent risk is structurally located. It does not measure behavioral adaptation; that construct requires event-time data and individual-level outcomes reserved for future work and for Dr. Alexander's parallel clinical study arm.
+
 ## Background
 People with spinal cord injuries and other disabilities requiring electricity-dependent medical equipment face compounding vulnerability during climate events. High-level SCI above T6 interrupts the autonomic nervous system's ability to thermoregulate — leaving individuals vulnerable to hyperthermia or hypothermia even in mild ambient temperatures. When extreme weather causes power outages, this population faces life-threatening risk that current disaster preparedness frameworks do not adequately address.
 
@@ -71,6 +73,8 @@ No published study has systematically mapped where these populations are most co
 
 ## Part 2 note from the Notion page
 > _retrospective, different usage patterns in different locales and cities_
+
+(Out of scope for this brief — Part 1 only.)
 
 ---
 

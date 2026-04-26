@@ -1,0 +1,833 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Convergent climate-and-disability vulnerability — US counties</title>
+
+<!-- D3 v7 (choropleth + projection), TopoJSON-client (geometry decode),
+     d3-composite-projections (positions PR alongside CONUS) -->
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://unpkg.com/topojson-client@3"></script>
+<script src="https://unpkg.com/d3-composite-projections@1.4.0/dist/d3-composite-projections.min.js"></script>
+
+<style>
+  :root {
+    --ink: #14181f;
+    --ink-soft: #4a5260;
+    --ink-mute: #8a93a3;
+    --bg: #f7f7f3;
+    --panel: #ffffff;
+    --panel-edge: #e5e7ec;
+    /* Stevens.pinkblue palette anchors */
+    --accent-power: #3a9c9c;     /* teal — power-dependency axis */
+    --accent-hazard: #be64ac;    /* magenta — climate hazard axis */
+    --accent-both: #3b4994;      /* deep navy — convergent (high/high) */
+    --accent-sf: #9c2d80;        /* deep magenta — South Florida pin outline */
+    --shadow: 0 1px 3px rgba(20,24,31,0.04), 0 6px 24px rgba(20,24,31,0.06);
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.45;
+    padding: 24px 28px 60px;
+  }
+
+  header {
+    margin-bottom: 18px;
+  }
+  header h1 {
+    margin: 0 0 4px;
+    font-size: 26px;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  header .sub {
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+  header .meta {
+    color: var(--ink-mute);
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  /* ---- KPI strip ----------------------------------------------- */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin: 16px 0 18px;
+  }
+  .kpi {
+    background: var(--panel);
+    border: 1px solid var(--panel-edge);
+    border-radius: var(--radius);
+    padding: 14px 16px 12px;
+    box-shadow: var(--shadow);
+  }
+  .kpi .label {
+    color: var(--ink-mute);
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+  }
+  .kpi .value {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 4px 0 2px;
+    color: var(--ink);
+  }
+  .kpi .detail { font-size: 12.5px; color: var(--ink-soft); }
+
+  /* ---- Statistical findings panel ------------------------------ */
+  .stats-panel {
+    background: var(--panel);
+    border: 1px solid var(--panel-edge);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+  }
+  .stats-panel h2 {
+    margin: 0 0 4px;
+    font-size: 14px;
+    color: var(--ink);
+    font-weight: 700;
+    letter-spacing: 0.01em;
+  }
+  .stats-panel p.lead {
+    margin: 0 0 10px;
+    color: var(--ink-soft);
+    font-size: 12.5px;
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 1100px) { .stats-grid { grid-template-columns: 1fr 1fr; } }
+  .stat-card {
+    border: 1px solid var(--panel-edge);
+    border-left: 4px solid var(--accent-both);
+    border-radius: 8px;
+    padding: 10px 12px;
+    background: #fbfbf7;
+    font-size: 12.5px;
+  }
+  .stat-card .tag {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-mute);
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .stat-card .stat-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 2px 0 4px;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-card .stat-meta {
+    color: var(--ink-soft);
+    font-size: 11.5px;
+    line-height: 1.35;
+  }
+
+  /* ---- Region callout panels ----------------------------------- */
+  .typology-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  .typology-row.triple {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  @media (max-width: 1100px) {
+    .typology-row.triple { grid-template-columns: 1fr; }
+  }
+  .typology {
+    background: var(--panel);
+    border: 1px solid var(--panel-edge);
+    border-left: 5px solid var(--accent-power);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    box-shadow: var(--shadow);
+  }
+  .typology.southeast { border-left-color: var(--accent-hazard); }
+  .typology.puertorico { border-left-color: var(--accent-power); border-left-style: dashed; }
+  .typology.puertorico h3 { color: #1f6e6e; }
+  .typology h3 {
+    margin: 0 0 4px;
+    font-size: 16px;
+    color: var(--accent-both);
+  }
+  .typology.southeast h3 { color: var(--accent-sf); }
+  .typology p { margin: 4px 0; color: var(--ink-soft); }
+  .typology .anchors {
+    margin-top: 8px;
+    font-size: 12.5px;
+    color: var(--ink);
+  }
+
+  /* ---- Main grid: map | side panel ----------------------------- */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1.7fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 1100px) { .main-grid { grid-template-columns: 1fr; } }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--panel-edge);
+    border-radius: var(--radius);
+    padding: 16px 18px 18px;
+    box-shadow: var(--shadow);
+  }
+  .panel h2 {
+    margin: 0 0 10px;
+    font-size: 16px;
+    color: var(--ink);
+    font-weight: 700;
+  }
+
+  /* ---- Controls ------------------------------------------------ */
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 16px;
+    margin-bottom: 12px;
+    color: var(--ink-soft);
+    font-size: 12.5px;
+  }
+  .control-group { display: flex; align-items: center; gap: 8px; }
+  .control-group label {
+    color: var(--ink-mute);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+  }
+  select, .layer-tab {
+    font: inherit;
+    color: var(--ink);
+    background: #fff;
+    border: 1px solid var(--panel-edge);
+    border-radius: 999px;
+    padding: 5px 12px;
+  }
+  .layer-tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+  .layer-tab {
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+  }
+  .layer-tab:hover { background: #f0f1f4; }
+  .layer-tab.active {
+    background: var(--ink);
+    color: #fff;
+    border-color: var(--ink);
+  }
+
+  /* ---- Map ----------------------------------------------------- */
+  .map-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    background: #fbfbf7;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  svg.map { width: 100%; height: 100%; display: block; }
+  path.county {
+    stroke: #ffffff;
+    stroke-width: 0.25px;
+    cursor: default;
+    transition: stroke 0.12s ease, stroke-width 0.12s ease;
+  }
+  path.county.hover { stroke: var(--ink); stroke-width: 0.9px; }
+  path.state-boundary {
+    fill: none;
+    stroke: #777;
+    stroke-width: 0.6px;
+    pointer-events: none;
+  }
+  path.county.sf-pin {
+    stroke: var(--accent-sf);
+    stroke-width: 1.4px;
+  }
+
+  /* ---- Tooltip -------------------------------------------------- */
+  .tooltip {
+    position: absolute;
+    pointer-events: none;
+    background: rgba(20,24,31,0.94);
+    color: #fff;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 1.35;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+    transform: translate(-50%, -120%);
+    transition: opacity 0.08s ease;
+    opacity: 0;
+    max-width: 240px;
+  }
+  .tooltip strong { color: #fff; font-weight: 700; }
+  .tooltip .row { display: flex; justify-content: space-between; gap: 12px; }
+  .tooltip .row .lab { color: #c1c8d4; }
+  .tooltip .row .val { color: #fff; font-variant-numeric: tabular-nums; }
+
+  /* ---- Color legend -------------------------------------------- */
+  .legend-wrap { margin-top: 10px; display: flex; align-items: center; gap: 10px; }
+  .legend-bar {
+    flex: 1;
+    height: 10px;
+    border-radius: 4px;
+  }
+  .legend-ticks {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--ink-mute);
+  }
+  .legend-label { font-size: 12px; color: var(--ink-soft); white-space: nowrap; }
+
+  /* ---- Top-N table --------------------------------------------- */
+  table.topn {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 12.5px;
+  }
+  table.topn thead th {
+    text-align: left;
+    color: var(--ink-mute);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--panel-edge);
+  }
+  table.topn td {
+    padding: 6px 8px;
+    border-bottom: 1px solid #f1f2f5;
+    color: var(--ink);
+  }
+  table.topn td.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  table.topn tr.iw td.county-name { color: var(--accent-both); font-weight: 600; }
+  table.topn tr.se td.county-name { color: var(--accent-sf); font-weight: 600; }
+  table.topn tr:hover td { background: #f7f8fb; }
+
+  footer {
+    margin-top: 22px;
+    color: var(--ink-mute);
+    font-size: 11.5px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Convergent climate-and-disability vulnerability — US counties &amp; Puerto Rico</h1>
+  <div class="sub">Where climate hazard exposure and electricity-dependent Medicare populations meet at the county and municipio level. Vulnerability is treated as a property of the infrastructure-population system, not of individuals.</div>
+  <div class="meta">FEMA NRI (Dec 2025) · CMS HHS emPOWER (Dec 2025) · Census TIGER 2022 · 3,131 US counties scored on convergent vulnerability · 78 Puerto Rico municipios on the power-dependency axis only (FEMA NRI: Insufficient Data)</div>
+</header>
+
+<!-- KPI cards ---------------------------------------------------- -->
+<section class="kpi-row">
+  <div class="kpi">
+    <div class="label">US counties scored on convergent risk</div>
+    <div class="value" id="kpi-counties">3,131</div>
+    <div class="detail">of 3,212 joined counties · plus 78 PR municipios on the power-dependency axis</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Highest vulnerability index (power-dependency × FEMA NRI)</div>
+    <div class="value" id="kpi-top-vi">96.9</div>
+    <div class="detail" id="kpi-top-vi-county">San Juan County, NM</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Electricity-dependent benes in top-10 counties</div>
+    <div class="value" id="kpi-top10-benes">—</div>
+    <div class="detail">Aggregate electricity-dependent count across the 10 highest-VI counties</div>
+  </div>
+  <div class="kpi">
+    <div class="label">South Florida coast — FEMA hazard percentile</div>
+    <div class="value" id="kpi-sf">99.8</div>
+    <div class="detail">Palm Beach 99.8 · Miami-Dade 99.7 · Broward 98.1</div>
+  </div>
+</section>
+
+<!-- Statistical findings ------------------------------------------- -->
+<section class="stats-panel">
+  <h2>Statistical findings — hard numbers behind the choropleth</h2>
+  <p class="lead">CONUS counties only (n = 3,099). The operational denominator is electricity-dependent Medicare beneficiaries (HHS emPOWER). Full methods and per-state breakdowns: <a href="../docs/part1_statistical_findings.md" style="color: var(--accent-both);">part1_statistical_findings.md</a>.</p>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="tag">Spearman ρ — hazard × power-dep</div>
+      <div class="stat-value">−0.218</div>
+      <div class="stat-meta">95% CI [−0.250, −0.181] · p &lt; 1e-30. The two pathways are statistically near-independent — and slightly inversely structured — at the county level. The two-typology framing as one number.</div>
+    </div>
+    <div class="stat-card">
+      <div class="tag">Global Moran's I — VI</div>
+      <div class="stat-value">+0.707</div>
+      <div class="stat-meta">Queen contiguity, 999 permutations, p &lt; 0.001. The regional clustering visible on the map is real, not a visual artifact. (Hazard alone: I = +0.670; power-dep alone: I = +0.748.)</div>
+    </div>
+    <div class="stat-card">
+      <div class="tag">LISA — convergent hotspot counties</div>
+      <div class="stat-value">676</div>
+      <div class="stat-meta">High-high cluster at p &lt; 0.05. 578 low-low. 16 HL + 27 LH outliers. The HH count is the formal statistical answer to "how many US counties form the convergent vulnerability bloc?"</div>
+    </div>
+    <div class="stat-card">
+      <div class="tag">Electricity-dep. benes in top-decile hazard counties</div>
+      <div class="stat-value">793,431</div>
+      <div class="stat-meta">26.8% of the national electricity-dependent Medicare population (RR 0.91 vs. population-proportional). 503k (17.0%) in top-5% hazard; 148k (5.0%) in top-1%. Risk is convergent, not over-concentrated.</div>
+    </div>
+  </div>
+  <p style="margin: 10px 0 0; font-size: 11.5px; color: var(--ink-mute);">
+    <strong>Spatial-error regression (n = 3,098, OLS R² = 0.581).</strong>
+    After ACS structural controls and state fixed effects, log&nbsp;median household income is the dominant negative predictor of vulnerability (β = −33.0, p &lt; 0.001); pct uninsured remains positive and significant (β = +0.22, p &lt; 0.001); pct&nbsp;65+ and pct&nbsp;poverty are not significant after controlling for income. Spatial autoregressive parameter λ = +0.604.
+  </p>
+</section>
+
+<!-- Three-region callouts ---------------------------------------- -->
+<section class="typology-row triple">
+  <div class="typology">
+    <h3>Intermountain West — high power-dependency, moderate-to-high hazard</h3>
+    <p>The dominant pattern in the national top 25. Concentration of electricity-dependent Medicare beneficiaries paired with regional drought, wildfire, and heat-wave exposure.</p>
+    <div class="anchors"><strong>Anchors:</strong> San Juan NM (96.9) · El Paso CO (94.5) · Bernalillo NM (94.2) · Mesa CO (92.9) · Utah UT (93.3)</div>
+  </div>
+  <div class="typology southeast">
+    <h3>South Florida coast — high hazard, moderate power-dependency</h3>
+    <p>Hurricane and coastal-flood exposure place the South Florida coast in the top 1% nationally on hazard. Power-dependent Medicare populations are large in absolute count but lower on a per-capita rate basis.</p>
+    <div class="anchors"><strong>Anchors:</strong> Palm Beach FL (hazard 99.8) · Miami-Dade FL (hazard 99.7) · Broward FL (98.1)</div>
+  </div>
+  <div class="typology puertorico">
+    <h3>Puerto Rico — climate-disability testing site, hazard-data gap</h3>
+    <p>78 municipios with ~49,000 electricity-dependent Medicare beneficiaries. FEMA NRI lists every PR municipio as <em>Insufficient Data</em>; the federal hazard framework does not score the territory despite documented hurricane exposure. Shown on the power-dependency axis only.</p>
+    <div class="anchors"><strong>Top municipios by absolute count:</strong> Bayamón · San Juan · Caguas · Ponce · Arecibo</div>
+  </div>
+</section>
+
+<!-- Main grid: map | side panel ----------------------------------- -->
+<section class="main-grid">
+  <div class="panel">
+    <div class="controls">
+      <div class="control-group">
+        <label>Layer</label>
+        <div class="layer-tabs" id="layer-tabs">
+          <span class="layer-tab active" data-layer="vi">Vulnerability index</span>
+          <span class="layer-tab" data-layer="hazard">Hazard percentile</span>
+          <span class="layer-tab" data-layer="power">Power-dependency percentile</span>
+          <span class="layer-tab" data-layer="abs">Absolute count (power-dependent benes)</span>
+        </div>
+      </div>
+      <div class="control-group">
+        <label>State</label>
+        <select id="state-filter">
+          <option value="ALL">All states (CONUS)</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label><input type="checkbox" id="pin-sf" checked /> Pin South Florida coast</label>
+      </div>
+    </div>
+
+    <div class="map-wrap">
+      <svg class="map" id="map"></svg>
+      <div class="tooltip" id="tooltip"></div>
+    </div>
+
+    <div class="legend-wrap">
+      <span class="legend-label" id="legend-label">Vulnerability index (dual-percentile)</span>
+      <div class="legend-bar" id="legend-bar"></div>
+    </div>
+    <div class="legend-ticks" id="legend-ticks"></div>
+  </div>
+
+  <div class="panel">
+    <h2 id="topn-heading">Top 10 counties — Vulnerability index</h2>
+    <div style="margin-bottom:6px; color:var(--ink-mute); font-size:12px;">
+      Filtered by current state selection. Hover the map to highlight a county; click a row to zoom.
+    </div>
+    <table class="topn" id="topn-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>County</th>
+          <th class="num">Hazard %</th>
+          <th class="num">Power %</th>
+          <th class="num" id="topn-metric-th">VI</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</section>
+
+<footer>
+  <p style="margin:0 0 6px;"><strong>Index construction.</strong> Vulnerability index = mean of national hazard percentile and national power-dependency percentile. Power-dependency is computed as the rate of electricity-dependent Medicare beneficiaries (HHS emPOWER) per total Medicare beneficiary. Equal-weighted dual-percentile rescaling protects the index from being dominated by raw scale differences (FEMA composite 0–100 vs. emPOWER rate ≈0–40%).</p>
+  <p style="margin:0 0 6px;"><strong>Framing.</strong> The hazard is not disability — it is the failure of power infrastructure to keep flowing to people whose bodies depend on it for survival or essential function. Convergent vulnerability is a structural property of the infrastructure-population system in a given place.</p>
+  <p style="margin:0;"><strong>Limitations.</strong> Medicare undercounts working-age people with disabilities who hold employer coverage, Medicaid-only enrollment, or no insurance. The 24-month SSDI waiting period excludes recently disabled individuals from the Medicare-disability denominator entirely, and racial and geographic disparities in SSDI approval propagate into the rates shown here. SCI cannot be isolated from public data and is triangulated through the parallel clinical study arm. Puerto Rico is shown on the power-dependency axis only because FEMA NRI returns "Insufficient Data" for all 78 municipios — the data gap is itself a finding. Static, cross-sectional analysis: does not measure behavioral adaptation, recovery, or coping (out of scope for Part 1).</p>
+</footer>
+
+<script>
+// ---------------------------------------------------------------
+// Data plumbing — loaded from sibling JSON files at runtime.
+// ---------------------------------------------------------------
+const TOPO_URL = "_dashboard_counties_topo.json";
+const DATA_URL = "_dashboard_county_data.json";
+
+const SF_FIPS = ["12099", "12086", "12011"];  // Palm Beach FL, Miami-Dade FL, Broward FL
+const IW_FIPS_ANCHORS = new Set([
+  "35045", "08041", "35001", "08077", "49049"      // San Juan NM, El Paso CO, Bernalillo NM, Mesa CO, Utah UT
+]);
+
+// Map state FIPS prefix -> state abbreviation (CONUS only, used for filter dropdown)
+// We populate this from the data array on first load.
+let STATE_BY_FIPS = {};
+
+// Layer config — drives map color, legend label, and table column.
+// Color ramps are tuned to the Stevens.pinkblue palette family used by
+// the bivariate static map: deep navy for the convergent VI, magenta
+// for the hazard axis, teal for the power-dep axis.
+const LAYERS = {
+  vi: {
+    label: "Vulnerability index (dual-percentile)",
+    short: "VI",
+    field: "vulnerability_index_dual_pct",
+    domain: [0, 100],
+    fmt: v => v == null ? "—" : v.toFixed(1),
+    // Custom ramp from light to deep navy (matches the high/high palette anchor)
+    interp: t => d3.interpolateRgbBasis(["#f4f4f6", "#bcc1e0", "#7f86bf", "#3b4994", "#1c2562"])(t),
+  },
+  hazard: {
+    label: "Climate-hazard percentile (FEMA NRI 5-hazard composite)",
+    short: "Hazard %",
+    field: "hazard_pctile_5",
+    domain: [0, 100],
+    fmt: v => v == null ? "—" : v.toFixed(1),
+    // Pink/magenta ramp aligned with the hazard axis of the bivariate palette
+    interp: t => d3.interpolateRgbBasis(["#f4eef1", "#e6c2da", "#d28cbe", "#be64ac", "#8a3a82"])(t),
+  },
+  power: {
+    label: "Power-dependency percentile (Medicare beneficiaries)",
+    short: "Power %",
+    field: "power_pctile_natl_pr",   // includes PR municipios
+    domain: [0, 100],
+    fmt: v => v == null ? "—" : v.toFixed(1),
+    // Teal ramp aligned with the power-dep axis of the bivariate palette
+    interp: t => d3.interpolateRgbBasis(["#f1f6f6", "#bee5e5", "#7fcaca", "#3a9c9c", "#1c6e6e"])(t),
+  },
+  abs: {
+    label: "Absolute count of electricity-dependent Medicare beneficiaries",
+    short: "# benes",
+    field: "total_power_dependent_benes",
+    domain: null,  // computed at runtime (sqrt scale to robust 99th pctile)
+    fmt: v => v == null ? "—" : Math.round(v).toLocaleString(),
+    interp: t => d3.interpolateRgbBasis(["#f1f6f6", "#bee5e5", "#7fcaca", "#3a9c9c", "#1c6e6e"])(t),
+    isAbsolute: true,
+  },
+};
+
+let STATE = {
+  layer: "vi",
+  stateFilter: "ALL",
+  pinSF: true,
+  countyByFips: new Map(),    // FIPS -> data record
+  topo: null,
+  geoCounties: null,          // FeatureCollection of counties
+  geoStates: null,            // mesh of state boundaries
+};
+
+const $ = (id) => document.getElementById(id);
+
+// ---------------------------------------------------------------
+// Boot
+// ---------------------------------------------------------------
+Promise.all([
+  fetch(TOPO_URL).then(r => r.json()),
+  fetch(DATA_URL).then(r => r.json()),
+]).then(([topo, data]) => {
+  STATE.topo = topo;
+  // The topojson Topology() output uses object name "data" by default.
+  const objName = Object.keys(topo.objects)[0];
+  STATE.geoCounties = topojson.feature(topo, topo.objects[objName]);
+  STATE.geoStates = topojson.mesh(topo, topo.objects[objName],
+    (a, b) => a !== b && a.properties.STATEFP !== b.properties.STATEFP);
+
+  STATE.countyByFips = new Map(data.map(d => [d.FIPS, d]));
+
+  // Populate state filter
+  const seen = new Map();
+  data.forEach(d => {
+    if (d.State && !seen.has(d.State)) seen.set(d.State, d.FIPS.slice(0, 2));
+  });
+  const sortedStates = [...seen.keys()].sort();
+  const sel = $("state-filter");
+  sortedStates.forEach(s => {
+    const opt = document.createElement("option");
+    opt.value = s; opt.textContent = s;
+    sel.appendChild(opt);
+  });
+  STATE_BY_FIPS = Object.fromEntries([...seen.entries()].map(([s, fp]) => [fp, s]));
+
+  // KPI: top-10 aggregate beneficiary count
+  const top10 = data.filter(d => d.vulnerability_index_dual_pct != null)
+    .sort((a, b) => b.vulnerability_index_dual_pct - a.vulnerability_index_dual_pct)
+    .slice(0, 10);
+  const top10Sum = top10.reduce((acc, d) => acc + (d.total_power_dependent_benes || 0), 0);
+  $("kpi-top10-benes").textContent = top10Sum.toLocaleString();
+
+  initLayerTabs();
+  initStateFilter();
+  initSFToggle();
+  drawMap();
+  drawTopN();
+});
+
+// ---------------------------------------------------------------
+// Controls
+// ---------------------------------------------------------------
+function initLayerTabs() {
+  document.querySelectorAll(".layer-tab").forEach(t => {
+    t.addEventListener("click", () => {
+      document.querySelectorAll(".layer-tab").forEach(x => x.classList.remove("active"));
+      t.classList.add("active");
+      STATE.layer = t.dataset.layer;
+      drawMap();
+      drawTopN();
+    });
+  });
+}
+function initStateFilter() {
+  $("state-filter").addEventListener("change", e => {
+    STATE.stateFilter = e.target.value;
+    drawMap();
+    drawTopN();
+  });
+}
+function initSFToggle() {
+  $("pin-sf").addEventListener("change", e => {
+    STATE.pinSF = e.target.checked;
+    drawMap();
+  });
+}
+
+// ---------------------------------------------------------------
+// Color scale construction for current layer
+// ---------------------------------------------------------------
+function makeScale() {
+  const cfg = LAYERS[STATE.layer];
+  if (cfg.isAbsolute) {
+    // Use a robust max — the 99th percentile — so a single mega-county
+    // doesn't compress everything else into one shade.
+    const vals = [...STATE.countyByFips.values()]
+      .map(d => d[cfg.field])
+      .filter(v => v != null && !isNaN(v))
+      .sort((a, b) => a - b);
+    const p99 = vals[Math.floor(vals.length * 0.99)] || vals[vals.length - 1] || 1;
+    const scale = d3.scaleSqrt().domain([0, p99]).range([0, 1]).clamp(true);
+    return v => v == null ? "#eaeaea" : cfg.interp(scale(v));
+  }
+  const [lo, hi] = cfg.domain;
+  return v => v == null ? "#eaeaea" : cfg.interp((v - lo) / (hi - lo));
+}
+
+// ---------------------------------------------------------------
+// Map
+// ---------------------------------------------------------------
+function drawMap() {
+  const svg = d3.select("#map");
+  svg.selectAll("*").remove();
+
+  const cfg = LAYERS[STATE.layer];
+  const colorOf = makeScale();
+
+  // SVG bounding box from the rendered <svg>
+  const node = svg.node();
+  const w = node.clientWidth || 900;
+  const h = node.clientHeight || 560;
+
+  // Choose features to draw based on state filter
+  const features = STATE.geoCounties.features.filter(f => {
+    if (STATE.stateFilter === "ALL") return true;
+    const fips = String(f.properties.FIPS || f.properties.GEOID || "").padStart(5, "0");
+    const stateAbbr = STATE_BY_FIPS[fips.slice(0, 2)];
+    return stateAbbr === STATE.stateFilter;
+  });
+
+  // Projection — when showing CONUS we use d3.geoAlbersUsaTerritories
+  // (from d3-composite-projections), which positions Puerto Rico
+  // alongside the lower-48 in a small inset. For a single-state filter
+  // we drop to plain Albers and let fitSize handle bounds.
+  let projection;
+  if (STATE.stateFilter === "ALL") {
+    if (typeof d3.geoAlbersUsaTerritories === "function") {
+      projection = d3.geoAlbersUsaTerritories();
+      // The composite projection has its own internal scale; we still
+      // want fitSize to size it to our viewport.
+      projection.fitSize([w, h], { type: "FeatureCollection", features });
+    } else {
+      // Library failed to load — fall back to AlbersUsa (drops PR).
+      projection = d3.geoAlbersUsa().fitSize([w, h], { type: "FeatureCollection", features });
+    }
+  } else {
+    projection = d3.geoAlbers().fitSize([w, h], { type: "FeatureCollection", features });
+  }
+  const path = d3.geoPath(projection);
+
+  // Counties
+  svg.append("g")
+    .selectAll("path.county")
+    .data(features)
+    .join("path")
+    .attr("class", d => {
+      const fips = String(d.properties.FIPS || d.properties.GEOID || "").padStart(5, "0");
+      let cls = "county";
+      if (STATE.pinSF && SF_FIPS.includes(fips)) cls += " sf-pin";
+      return cls;
+    })
+    .attr("d", path)
+    .attr("fill", d => {
+      const fips = String(d.properties.FIPS || d.properties.GEOID || "").padStart(5, "0");
+      const rec = STATE.countyByFips.get(fips);
+      const v = rec ? rec[cfg.field] : null;
+      return colorOf(v);
+    })
+    .on("mousemove", function (event, d) {
+      d3.select(this).classed("hover", true);
+      const fips = String(d.properties.FIPS || d.properties.GEOID || "").padStart(5, "0");
+      const rec = STATE.countyByFips.get(fips);
+      showTooltip(event, rec, fips);
+    })
+    .on("mouseout", function () {
+      d3.select(this).classed("hover", false);
+      hideTooltip();
+    });
+
+  // State boundary mesh — only in CONUS view
+  if (STATE.stateFilter === "ALL") {
+    svg.append("path")
+      .datum(STATE.geoStates)
+      .attr("class", "state-boundary")
+      .attr("d", path);
+  }
+
+  // Legend
+  drawLegend(cfg, colorOf);
+}
+
+// ---------------------------------------------------------------
+// Legend
+// ---------------------------------------------------------------
+function drawLegend(cfg, colorOf) {
+  $("legend-label").textContent = cfg.label;
+
+  const bar = $("legend-bar");
+  // Build a horizontal gradient using the current interpolator
+  const stops = 32;
+  const grad = [];
+  for (let i = 0; i <= stops; i++) {
+    const t = i / stops;
+    grad.push(`${cfg.interp(t)} ${(t * 100).toFixed(1)}%`);
+  }
+  bar.style.background = `linear-gradient(to right, ${grad.join(", ")})`;
+
+  const ticksEl = $("legend-ticks");
+  ticksEl.innerHTML = "";
+  if (cfg.isAbsolute) {
+    const vals = [...STATE.countyByFips.values()]
+      .map(d => d[cfg.field])
+      .filter(v => v != null && !isNaN(v))
+      .sort((a, b) => a - b);
+    const p99 = vals[Math.floor(vals.length * 0.99)] || 1;
+    const ticks = [0, p99 * 0.25, p99 * 0.5, p99 * 0.75, p99];
+    ticks.forEach(t => {
+      const span = document.createElement("span");
+      span.textContent = Math.round(t).toLocaleString();
+      ticksEl.appendChild(span);
+    });
+  } else {
+    [0, 25, 50, 75, 100].forEach(t => {
+      const span = document.createElement("span");
+      span.textContent = t;
+      ticksEl.appendChild(span);
+    });
+  }
+}
+
+// ---------------------------------------------------------------
+// Tooltip
+// ---------------------------------------------------------------
+function showTooltip(event, rec, fips) {
+  const tt = $("tooltip");
+  if (!rec) {
+    tt.innerHTML = `<strong>FIPS ${fips}</strong><br/><span class="row"><span class="lab">No data</span></span>`;
+  } else {
+    const row = (lab, val) => `<div class="row"><span class="lab">${lab}</span><span class="val">${val}</span></div>`;
+    tt.innerHTML =
+      `<strong>${rec.County}, ${rec.State}</strong>` +
+      row("Vulnerability index", rec.vulnerability_index_dual_pct == null ? "—" : rec.vulnerability_index_dual_pct.toFixed(1)) +
+      row("Hazard percentile", rec.hazard_pctile_5 == null ? "—" : rec.hazard_pctile_5.toFixed(1)) +
+      row("Power-dep. percentile", rec.power_pctile == null ? "—" : rec.power_pctile.toFixed(1)) +
+      row("Electricity-dependent benes", rec.total_power_dependent_benes == null ? "—" : Math.round(rec.total_power_dependent_benes).toLocaleString()) +
+      row("Total Medicare benes (denom.)", rec.total_medicare_benes == null ? "—" : Math.round(rec.total_medicare_benes).toLocaleString());
+  }
+  tt.style.opacity = 1;
+  // Anchor to mouse position relative to map-wrap
+  const wrap = document.querySelector(".map-wrap").getBoundingClientRect();
+  tt.style.left = (event.clientX - wrap.left) + "px";
+  tt.style.top = (event.clientY - wrap.top) + "px";
+}
+function hideTooltip() { $("tooltip").style.opacity = 0; }
+
+// ---------------------------------------------------------------
+// Top-N table
+// ---------------------------------------------------------------
+function drawTopN() {
+  const cfg = LAYERS[STATE.layer];
+  $("topn-heading").textContent = `Top 10 counties — ${cfg.label}`;
+  $("topn-metric-th").textContent = cfg.short;
+
+  const all = [...STATE.countyByFips.values()].filter(d => {
+    if (STATE.stateFilter !== "ALL" && d.State !== STATE.stateFilter) return false;
+    return d[cfg.field] != null && !isNaN(d[cfg.field]);
+  });
+  all.sort((a, b) => b[cfg.field] - a[cfg.field]);
+  const top = all.slice(0, 10);
+
+  const tbody = document.querySelector("#topn-table tbody");
+  tbody.innerHTML = "";
+  top.forEach((rec, i) => {
+    const tr = document.createElement("tr");
+    if (IW_FIPS_ANCHORS.has(rec.FIPS)) tr.classList.add("iw");
+    if (SF_FIPS.includes(rec.FIPS)) tr.classList.add("se");
+    tr.innerHTML = `
+      <td>${i + 1}</td>
+      <td class="county-name">${rec.County}, ${rec.State}</td>
+      <td class="num">${rec.hazard_pctile_5 == null ? "—" : rec.hazard_pctile_5.toFixed(1)}</td>
+      <td class="num">${rec.power_pctile == null ? "—" : rec.power_pctile.toFixed(1)}</td>
+      <td class="num">${cfg.fmt(rec[cfg.field])}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+</script>
+</body>
+</html>

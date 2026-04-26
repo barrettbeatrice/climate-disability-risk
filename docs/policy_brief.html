@@ -218,8 +218,8 @@
     <h1>Electricity-Dependent Disability and Climate Hazard Convergence:<br>A County-Level Risk Analysis</h1>
     <div class="subtitle">Informing Rehabilitation Preparedness Policy in an Era of Climate Change</div>
     <div class="meta">
-      <span>Barrett Jackson | Alexander Lab, Marcus Neuroscience Institute, Baptist Health South Florida</span>
-      <span>March 2026</span>
+      <span>Barrett Jackson | Alexander Lab, Marcus Neuroscience Institute</span>
+      <span>April 2026</span>
     </div>
   </div>
 
@@ -229,53 +229,82 @@
     <!-- SECTION 1 — THE PROBLEM -->
     <div class="section">
       <h2>The Problem</h2>
-      <p>People with spinal cord injuries and other disabilities requiring electricity-dependent medical equipment face compounding vulnerability during climate events: physiological inability to thermoregulate combined with dependence on powered devices such as ventilators, oxygen concentrators, and powered wheelchairs. When extreme weather events cause power outages, this population faces life-threatening risk that current disaster preparedness frameworks do not adequately address. No published study has systematically mapped where these populations are most concentrated relative to climate hazard exposure.</p>
+      <p>People with spinal cord injuries and other physical disabilities depend on electricity-powered medical equipment — ventilators, oxygen concentrators, powered wheelchairs, suction, IV infusion — for survival or essential function. The hazard is not the disability; it is the failure of power infrastructure to keep flowing to people whose bodies depend on it. Climate-driven extreme weather is the primary modern driver of large-scale grid disruption, yet current disaster preparedness frameworks do not systematically map where electricity-dependent populations and climate hazard converge.</p>
     </div>
 
-    <!-- SECTION 2 — THE ANALYSIS -->
+    <!-- SECTION 2 — POPULATION DEFINITION -->
+    <div class="section">
+      <h2>Population Definition</h2>
+      <p>The operational denominator throughout this brief is <strong>electricity-dependent Medicare beneficiaries</strong> — the HHS emPOWER cohort with claims for survival-critical powered durable medical equipment (ventilators, oxygen concentrators, powered wheelchairs, suction, IV infusion). Spinal cord injury is the grant's clinical motivation but cannot be isolated from public Medicare files; SCI-specific conclusions are triangulated through the parallel clinical study arm rather than read directly off this map.</p>
+    </div>
+
+    <!-- SECTION 3 — THE ANALYSIS -->
     <div class="section">
       <h2>The Analysis</h2>
-      <p>This analysis joins two federal datasets — the FEMA National Risk Index and the HHS emPOWER Map — at the county level across 3,144 US counties to calculate a composite vulnerability index combining climate hazard exposure and electricity-dependent DME utilization rates. Hazard scores incorporate hurricane, heat wave, wildfire, coastal flood, and drought risk. Power dependency rates are normalized by county Medicare population to control for county size. The resulting vulnerability index identifies counties where climate hazard and disability power dependency converge most severely.</p>
+      <p>This analysis joins the FEMA National Risk Index and the HHS emPOWER Map at the county level across 3,131 scored US counties plus 78 Puerto Rico municipios. Each county receives a national hazard percentile (FEMA NRI 5-hazard composite: hurricane, heat wave, wildfire, coastal flood, drought) and a national power-dependency percentile (electricity-dependent Medicare beneficiaries per total Medicare beneficiary). The vulnerability index is the equal-weighted mean of the two percentiles — a dual-percentile rescaling that prevents either axis from dominating the index by raw scale. Convergent vulnerability is treated throughout as a property of the infrastructure-population system, not of individuals.</p>
     </div>
 
     <!-- MAP — full width -->
     <div class="figure-block section">
-      <img src="../visualizations/vulnerability_map.png"
-           alt="Choropleth map of county-level climate-disability vulnerability index across the continental United States" />
+      <img src="../visualizations/fig1_bivariate_choropleth.png"
+           alt="Bivariate choropleth of US counties on the FEMA hazard percentile and electricity-dependent Medicare beneficiary percentile axes, with a Puerto Rico inset on the power-dependency axis only." />
       <div class="fig-caption">
-        <strong>Figure 1.</strong> County-level Vulnerability Index (0–100) combining FEMA National Risk Index composite hazard scores
-        and HHS emPOWER electricity-dependent Medicare beneficiary rates. Darker red = higher convergent risk.
-        Source: FEMA NRI v1.20 (Dec 2025) + HHS emPOWER Map (Mar 2026).
+        <strong>Figure 1.</strong> Bivariate choropleth — FEMA NRI hazard percentile × electricity-dependent Medicare beneficiary percentile. Stevens.pinkblue palette: deep navy = high on both axes. Puerto Rico inset shaded along the power-dependency axis only (FEMA NRI: Insufficient Data).
+        Source: FEMA NRI (Dec 2025) + HHS emPOWER Map (Dec 2025) + Census TIGER 2022.
       </div>
     </div>
 
-    <!-- SECTION 3 — KEY FINDINGS -->
+    <!-- SECTION 4 — KEY FINDINGS -->
     <div class="section">
       <h2>Key Findings</h2>
       <div class="callout">
-        <p>Palm Beach and Miami-Dade counties fall within the national top 10 for convergent risk — placing Baptist Health's primary service area among the highest-risk jurisdictions in the country.</p>
+        <p>The national top-25 for convergent vulnerability is dominated by an Intermountain West cluster (high power-dependency, moderate-to-high hazard); the South Florida coast carries the largest absolute electricity-dependent counts at the highest hazard percentiles; Puerto Rico is invisible to the federal hazard framework despite documented hurricane exposure.</p>
       </div>
       <ul>
-        <li>San Joaquin Valley counties dominate the top national rankings, driven by extreme wildfire, heat, and drought scores in the 97th–99th national percentile.</li>
-        <li>San Juan County, NM presents a distinct risk profile with the highest power dependency rate in the top 20 (11.8%), identifying high dependency as an independent vulnerability pathway separate from hazard exposure.</li>
-        <li>Two distinct risk pathways identified: extreme climate hazard exposure (California) and extreme power dependency concentration (rural Southwest).</li>
+        <li><strong>Two structural typologies.</strong> Intermountain West counties (San Juan NM 96.9, El Paso CO 94.5, Bernalillo NM 94.2, Mesa CO 92.9, Utah UT 93.3) reach the top of the index via concentrated electricity-dependent populations paired with regional drought, wildfire, and heat-wave exposure. The South Florida coast (Palm Beach FL 99.8, Miami-Dade FL 99.7, Broward FL 98.1) reaches the top via top-1% hurricane and coastal-flood hazard with large absolute electricity-dependent counts.</li>
+        <li><strong>Puerto Rico is a hazard-data gap, not a low-risk zone.</strong> All 78 PR municipios are marked Insufficient Data in FEMA NRI; the territory carries an estimated 49,000 electricity-dependent Medicare beneficiaries and lived experience of multi-week power outages from Hurricanes Maria (2017), Fiona (2022), and Ernesto (2024). The data gap is itself a finding worth naming.</li>
+        <li><strong>Rate vs. count diverge.</strong> Counties in the top decile by power-dependency <em>rate</em> are predominantly rural and Intermountain West; counties in the top decile by <em>absolute</em> electricity-dependent count are predominantly populous and coastal. Preparedness planning needs both views.</li>
       </ul>
     </div>
 
-    <!-- SECTION 4 — POLICY IMPLICATIONS -->
+    <!-- SECTION 4b — STATISTICAL FINDINGS -->
     <div class="section">
-      <h2>Policy Implications</h2>
-      <p>These findings support targeted telerehabilitation infrastructure investment in highest-risk counties as a climate adaptation strategy, consistent with recommendations in Alexander &amp; Alexander (2025). Counties in the top vulnerability quartile should be prioritized for disaster preparedness protocols specific to electricity-dependent disabled populations. Phase 2 of this analysis will extend the framework internationally using WHO rehabilitation access data and IPCC regional climate projections.</p>
+      <h2>Statistical Findings</h2>
+      <ul>
+        <li><strong>Spearman ρ = −0.218</strong> (95% CI −0.250 … −0.181; p &lt; 1e-30; n = 3,099 CONUS counties). The hazard and power-dependency axes are statistically near-independent — and slightly inversely structured — at the county level. The two-typology framing is recovered as one coefficient.</li>
+        <li><strong>Global Moran's I (Queen contiguity, 999 permutations):</strong> vulnerability index I = +0.707; hazard percentile I = +0.670; power-dependency percentile I = +0.748. All p &lt; 0.001 — regional clustering is real, not a visual artifact.</li>
+        <li><strong>LISA cluster classification (p &lt; 0.05):</strong> 676 high-high counties (convergent vulnerability bloc), 578 low-low counties, 16 high-VI outliers, 27 low-VI outliers. The HH count is the formal answer to "how many counties make up the convergent-vulnerability cluster?"</li>
+        <li><strong>Attributable burden:</strong> 793,431 electricity-dependent Medicare beneficiaries (26.8% of the national total) live in counties at or above the 90th percentile of FEMA hazard; 503,131 (17.0%) above P95; 148,276 (5.0%) above P99. Risk ratios versus a population-proportional counterfactual hover near 0.9 — the population is not generally over-concentrated in high-hazard counties; convergent risk is locational, concentrated in the LISA high-high bloc.</li>
+        <li><strong>Spatial-error regression of VI on ACS covariates plus state fixed effects (n = 3,098, OLS R² = 0.581, spatial pseudo-R² = 0.548):</strong> log median household income is the dominant negative predictor (β = −33.0, p &lt; 0.001); percent uninsured is positive and significant (β = +0.22, p &lt; 0.001); percent age 65+ and percent below poverty are not significant after controlling for income; spatial autoregressive parameter λ = +0.604. Higher-income counties carry meaningfully lower convergent vulnerability conditional on FEMA hazard, regional context, and Medicare-population scale.</li>
+      </ul>
     </div>
 
-    <!-- SECTION 5 — NEXT STEPS -->
+    <!-- SECTION 5 — POLICY IMPLICATIONS -->
+    <div class="section">
+      <h2>Policy Implications</h2>
+      <p>These findings support targeted telerehabilitation and power-redundancy infrastructure investment in the highest-vulnerability counties as a climate adaptation strategy, consistent with recommendations in Alexander &amp; Alexander (2025). Counties in the top vulnerability quartile — and PR municipios on the absolute-count axis — should be prioritized for preparedness protocols designed around the survival-critical electricity dependency the data actually measures, not generic "vulnerable population" framings. Phase 2 will extend the framework internationally using WHO rehabilitation access data and IPCC regional climate projections.</p>
+    </div>
+
+    <!-- SECTION 6 — LIMITATIONS -->
+    <div class="section">
+      <h2>Limitations</h2>
+      <ul>
+        <li><strong>Medicare undercount.</strong> Working-age people with disabilities holding employer coverage, Medicaid-only enrollment, or no insurance are not captured in this denominator. The 24-month SSDI waiting period further excludes recently disabled individuals from Medicare-disability rates entirely.</li>
+        <li><strong>Disparity propagation.</strong> Racial and geographic disparities in SSDI approval rates flow into the Medicare-disability denominator; low rates in young, low-income, rural counties may reflect access gaps rather than underlying prevalence.</li>
+        <li><strong>SCI is not isolatable.</strong> Identifying the spinal-cord-injury cohort requires a CMS Data Use Agreement (ResDAC) for claims-level files; that work is out of scope for Part 1. Triangulation with the parallel clinical study arm is the path back to SCI-specific conclusions.</li>
+        <li><strong>Cross-sectional only.</strong> The index does not measure behavioral adaptation, recovery, or coping. It maps where convergent risk is structurally located, not how individuals or systems respond when an event occurs.</li>
+        <li><strong>Puerto Rico hazard gap.</strong> FEMA NRI returns Insufficient Data for all 78 PR municipios. PR is shown on the power-dependency axis only and excluded from the convergent vulnerability index.</li>
+      </ul>
+    </div>
+
+    <!-- SECTION 7 — NEXT STEPS -->
     <div class="section">
       <h2>Next Steps</h2>
       <ul>
         <li>International extension using WHO rehabilitation data and World Bank electricity access indicators to identify high-risk regions globally.</li>
-        <li>Qualitative interviews with SCI clinicians in top-10 counties to characterize existing emergency preparedness protocols and identify gaps.</li>
-        <li>Integration of NOAA historical power outage duration data to weight the vulnerability index by realized infrastructure fragility.</li>
-        <li>Dissemination to county emergency management offices in the top vulnerability quartile via targeted policy brief distribution.</li>
+        <li>Qualitative interviews with SCI clinicians in top-decile counties to characterize existing emergency preparedness protocols and gaps.</li>
+        <li>Integration of NOAA historical power-outage duration data to weight the vulnerability index by realized infrastructure fragility.</li>
+        <li>ResDAC pull for SCI-specific cohort identification, contingent on Data Use Agreement approval.</li>
         <li>Submission of findings to the <em>Journal of Spinal Cord Medicine</em> and the <em>Journal of Climate Change and Health</em>.</li>
       </ul>
     </div>
@@ -289,8 +318,7 @@
       </div>
       <div class="footer-right">
         Alexander Lab · Marcus Neuroscience Institute<br>
-        Baptist Health South Florida<br>
-        March 2026
+        April 2026
       </div>
     </div>
 

@@ -29,11 +29,9 @@ The clinical arm administers the Washington Group Extended Set (WG-ES), the Hogg
 
 The theoretical framing draws from Chapter 4 of Alexander & Alexander (2025, Elsevier), which calls for "disruptive practices" — specifically GIS-based spatial analysis combined with individual-level tracking — to overcome the limitations of existing disability surveillance frameworks in the climate-health domain.
 
-## Two-Part Analysis Structure
+## Part 1: Convergent Vulnerability Mapping (Complete)
 
-### Part 1: Aggregate Vulnerability Analysis (Complete)
-
-Six Medicare variables measuring electricity-dependent population density are joined with FEMA National Risk Index hazard scores across 3,212 US counties (3,131 scored on the headline vulnerability index; 81 counties excluded due to insufficient FEMA hazard data; 5 counties suppressed under HIPAA cell-size rules). A dual-percentile rescaled vulnerability index identifies counties where high population dependence and high grid-disruptive climate hazard exposure co-occur.
+Part 1 is a static, cross-sectional geospatial analysis. Six Medicare variables measuring electricity-dependent population density are joined with FEMA National Risk Index hazard scores across 3,212 US counties (3,131 scored on the headline vulnerability index; 81 counties excluded due to insufficient FEMA hazard data; 5 counties suppressed under HIPAA cell-size rules). A dual-percentile rescaled vulnerability index identifies counties where high population dependence and high grid-disruptive climate hazard exposure co-occur. Part 1 answers *where* convergent climate-and-disability risk is structurally located. It does not measure behavioral adaptation, coping, or response — those constructs require event-time data and individual-level outcomes that public Medicare files cannot provide on their own, and are reserved for Phase 2 / international extension and Dr. Alexander's parallel clinical study arm.
 
 **Medicare Variables (Part 1):**
 
@@ -52,9 +50,9 @@ The headline vulnerability index uses the *5-hazard grid-disruptive composite*: 
 
 The per-covariate diagnostic choropleths and correlation heatmap additionally include Cold Wave (CWAV), Inland Flood (IFLD), Winter Weather (WNTW), and Ice Storm (ISTM) — giving a 9-hazard view used only for secondary diagnostic analysis.
 
-### Part 2: Adaptation-Pattern Typology (In Progress)
+### Future work
 
-Part 2 shifts from *where is vulnerability located* (Part 1) to *how are electricity-dependent populations adapting to climate exposure differently across US locales and metropolitan areas*. Using the six Medicare utilization variables from Part 1 plus the FEMA hazard composite, Part 2 clusters US counties and Core-Based Statistical Areas (CBSAs) into adaptation profiles — distinct patterns of coping defined by the co-occurrence of hazard exposure, power dependency, home-health uptake, hospice rate, and service engagement. The working hypothesis is that electricity-dependent Medicare populations adapt along at least five distinguishable pathways (shelter-in-place with dense clinical support; medical migration to low-hazard metros; stranded rural dependency; hospice-as-adaptation; urban-infrastructure-enabled high-dependency), with meaningful equity consequences across them.
+Subsequent phases (international extension and the parallel clinical study arm) will address the behavioral and individual-level questions that Part 1's ecological design cannot answer. Those phases are out of scope for this README, which documents Part 1 only.
 
 An earlier Part 2 design targeted HCPCS device-level isolation via the CMS MUP DME file. That approach was retired on April 18, 2026 after the by-geography release was confirmed state-level only and therefore incapable of supporting county-level device-specific analysis. The device categorization survives here as *clinical framing* — the SCI-motivated lens through which we interpret the broader electricity-dependent population's behavior. The HCPCS-level direct identification remains a future-work item pending claims-level data access.
 
@@ -170,7 +168,7 @@ County-level maps of the contiguous United States:
 | Medicare Monthly Enrollment | data.cms.gov | December 2025 | `data/mme_dec2025_county_clean.csv` |
 | Provider of Services (POS) | data.cms.gov | Q4 2025 | `data/POS_File_QIES_Q4_2025.csv` |
 | CT FIPS Crosswalk | census.gov | 2022 | `data/ct_fips_crosswalk.csv` |
-| ~~MUP DME by Geography~~ | ~~data.cms.gov~~ | ~~RY2024 / DY2022~~ | *Retired — confirmed state-level only; superseded by adaptation-pattern analysis* |
+| ~~MUP DME by Geography~~ | ~~data.cms.gov~~ | ~~RY2024 / DY2022~~ | *Retired — confirmed state-level only, incapable of supporting county-level device-specific analysis. Superseded by the six-covariate Medicare composite (Part 1) and deferred to Part 2's event-time design.* |
 
 **Join key:** Five-digit FIPS county code. Connecticut's 2022 FIPS reorganization (8 legacy counties → 9 planning regions) is handled via crosswalk.
 
@@ -251,6 +249,6 @@ Marcus Neuroscience Institute | Baptist Health South Florida
 
 ---
 
-*Part 1 of 2 — Aggregate Vulnerability Analysis complete. Part 2 (adaptation-pattern typology across US locales and CBSAs) in progress.*
+*Part 1 — Convergent Vulnerability Mapping complete (US, 3,131 counties scored). International extension and clinical study arm (Dr. Alexander) ongoing.*
 
 *Analysis conducted in Python 3.x using pandas, geopandas, matplotlib, seaborn, and scipy. Data: FEMA NRI v1.20 (Dec 2025), HHS emPOWER (Mar 2026), CMS MME (Dec 2025).*

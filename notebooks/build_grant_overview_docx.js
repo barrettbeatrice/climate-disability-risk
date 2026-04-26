@@ -134,6 +134,7 @@ sections.push(
 // ===== SPECIFIC AIMS =====
 sections.push(
   H1("Specific Aims"),
+  P("This proposal documents Part 1: a static, cross-sectional geospatial analysis of where convergent climate-and-disability risk is structurally located across US counties. Behavioral adaptation, coping, and individual-level outcomes are out of scope for Part 1 and are carried by Phase 2 and Dr. Alexander's parallel clinical study arm."),
   H2("Aim 1. Characterize the electrically-dependent Medicare population at the county level."),
   P("Using six publicly available, county-level Medicare utilization covariates (detailed below), produce a national dataset that quantifies, for every US county, the share of the Medicare population whose continued health and safety depends on uninterrupted access to electrical power and electricity-mediated care delivery."),
   H2("Aim 2. Quantify county-level convergence of power-dependent disability and climate hazard."),

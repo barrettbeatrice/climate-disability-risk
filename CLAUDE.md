@@ -23,11 +23,21 @@ The project maps electricity-dependent Medicare populations
 against climate hazard exposure at the county level (US) and 
 WHO region level (international).
 
-## Research Question
-Across US counties and international regions, how does convergent 
-climate-and-disability risk differ for electricity-dependent 
-Medicare populations — and how do these populations adapt to 
-climate exposure differently across locales and metropolitan areas?
+## Research Question (Part 1)
+
+Which US counties have the highest convergent risk for 
+electricity-dependent disabled populations during climate-related 
+power disruption, and what structural factors differentiate 
+high-risk from low-risk counties?
+
+Part 1 is a static, cross-sectional geospatial analysis: it maps 
+where convergent climate-and-disability risk is structurally located. 
+It does not measure behavioral adaptation, coping, or response — 
+those constructs require event-time data and individual-level 
+outcomes that the public Medicare files cannot provide on their 
+own. They are out of scope for Part 1 and reserved for future work 
+(Phase 2 / international extension and Dr. Alexander's parallel 
+clinical study arm).
 
 ## Primary Data Sources
 - CMS Medicare DME Dataset (data.cms.gov) — county-level, 
