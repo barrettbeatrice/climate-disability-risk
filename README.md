@@ -6,6 +6,34 @@
 
 ---
 
+## Project Deliverables — Single-Source Index
+
+This README is the canonical written summary for the project. Everything else is derived from or feeds into the analysis it describes.
+
+| Deliverable | Location | Purpose |
+|---|---|---|
+| Canonical README | `README.md` (this file) | Comprehensive single-source narrative |
+| Grant overview & proposal | `docs/grant_overview_and_proposal.docx` | Word-format grant narrative |
+| Policy brief (one-page) | `docs/policy_brief.html` | Two-column letter-size handout |
+| Statistical findings | `docs/part1_statistical_findings.md` | Hard numbers (ρ, Moran's I, LISA, burden, regression) |
+| Slide deck | `docs/slide_deck.html` | 11-slide self-contained presentation (open in browser; arrow keys) |
+| Methodology pros/cons | `docs/analytical_part1b_methodology_pros_cons.md` | Internal methodology decision log |
+| Notion analyst page | [34b56834683c81f6aab1e686691faa28](https://www.notion.so/34b56834683c81f6aab1e686691faa28) | Full analyst documentation |
+| Notion portfolio page | [32356834683c81f59293e357eb733f47](https://www.notion.so/32356834683c81f59293e357eb733f47) | Visual portfolio entry |
+| Bivariate choropleth | `visualizations/fig1_bivariate_choropleth.png` | Q1: where convergent risk concentrates |
+| Top-10 split bars | `visualizations/fig2_top10_split_bars.png` | Q1: who's at the top |
+| Scatter quadrants | `visualizations/fig3_scatter_quadrants.png` | Q1: two-typology framing |
+| LISA cluster map | `visualizations/fig4_lisa_cluster_map.png` | Q1: statistical hotspots (676 HH counties) |
+| Regression forest | `visualizations/fig5_regression_forest.png` | Q2: structural drivers (income dominates) |
+| Interactive dashboard | `visualizations/grant_overview_dashboard_standalone.html` | KPI + layer-toggle d3 explorer |
+| Analysis-ready dataset | `data/part1_analysis_ready.csv` | Joined county-level frame (3,212 rows × 41 cols) |
+| LISA classification | `data/lisa_county_classification.csv` | Per-county LISA label (3,099 CONUS counties) |
+| Spatial pipeline | `notebooks/part1_statistical_analysis.py` | Reproducible statistical pipeline |
+| ACS covariate fetch | `notebooks/fetch_acs_covariates.py` | ACS 5-year (2022) county covariates |
+| Dual-percentile recompute | `notebooks/recompute_vulnerability_dual_percentile.py` | Vulnerability index methodology |
+
+---
+
 ## Background
 
 Individuals with spinal cord injuries (SCI) face compounding physiological vulnerabilities during climate-related emergencies. Impaired thermoregulation renders them acutely susceptible to heat events; paralysis and spasticity limit the self-protective mobility that allows ambulatory populations to evacuate or shelter effectively. Critically, a significant subset of this population depends on electricity-powered equipment — volume ventilators, oxygen concentrators, CPAP/BiPAP devices, suction apparatus, and powered wheelchairs — for survival. Climate-driven power disruption is therefore not merely a convenience failure but a life-safety event.
@@ -124,15 +152,60 @@ The disability rate (`dsbld_rate`) from the Medicare Monthly Enrollment file ser
 
 **Negative inland-flood correlations.** The Spearman correlation heatmap reveals negative correlations between most emPOWER variables and inland flood risk scores, suggesting that electricity-dependent populations are not concentrated in inland flood zones. This warrants further investigation in Part 2.
 
+## Statistical Findings (Part 1)
+
+These statistics formalize the visual patterns reported above. All headline numbers were independently re-derived from `data/part1_analysis_ready.csv` and `data/lisa_county_classification.csv` during a `/data:validate-data` review on April 27, 2026.
+
+**Spearman ρ = −0.218** between hazard percentile and power-dependency percentile (95% bootstrap CI [−0.250, −0.181]; p = 1.08×10⁻³⁴; n = 3,099 CONUS counties). The two pathways into convergent risk — climate hazard density and power-dependency density — are statistically near-independent at the county level. The two-typology framing is recovered as a single coefficient.
+
+**Global Moran's I (Queen contiguity, 999 permutations):** vulnerability index I = +0.707, hazard percentile I = +0.670, power-dependency percentile I = +0.748 — all p < 0.001. Regional clustering is statistically real, not a visual artifact.
+
+**LISA cluster classification (p < 0.05, 999 conditional permutations):** **676 high-high counties** (the formal convergent-vulnerability bloc), 578 low-low counties, 16 high-VI outliers, 27 low-VI outliers, 1,802 not significant. Per-county labels in `data/lisa_county_classification.csv`.
+
+**Attributable burden — electricity-dependent Medicare beneficiaries by FEMA hazard threshold:**
+
+| Hazard pctile cutoff | Counties | Electricity-dep. benes | Share of national total |
+|---|---|---|---|
+| ≥ P50 | 1,566 | 2,219,976 | 75.0% |
+| ≥ P75 | 783 | 1,505,311 | 50.8% |
+| ≥ P90 | 314 | 793,431 | 26.8% |
+| ≥ P95 | 157 | 503,131 | 17.0% |
+| ≥ P99 | 32 | 148,276 | 5.0% |
+
+National electricity-dependent total (joined denominator): **2,960,586** beneficiaries.
+
+**Spatial-error regression** of dual-percentile vulnerability index on ACS 5-year (2022) covariates plus state fixed effects (n = 3,098, OLS R² = 0.581, spatial pseudo-R² = 0.548, λ = +0.604):
+
+| Covariate | Standardized β | SE | p |
+|---|---|---|---|
+| log Median Income | **−33.001** | 3.406 | < 0.001 |
+| log Medicare Population | +7.244 | 0.437 | < 0.001 |
+| Pct Uninsured | +0.220 | 0.059 | < 0.001 |
+| Pct 65+ | −0.075 | 0.049 | 0.130 |
+| Pct Below Poverty | +0.050 | 0.064 | 0.433 |
+
+Higher-income counties carry meaningfully lower convergent vulnerability conditional on FEMA hazard, regional context, and Medicare-population scale. Age 65+ share and poverty rate fall out of significance once income is controlled for. The forest-plot rendering is `visualizations/fig5_regression_forest.png`.
+
 ## Visualizations
 
 All visualizations are in `visualizations/` at 300 DPI.
 
-### Headline Map
+### Canonical Five-Figure Suite
+
+| File | What it answers | Visual style |
+|------|-----------------|---------------|
+| `fig1_bivariate_choropleth.png` | **Q1: Where convergent risk concentrates** — national bivariate choropleth, Stevens.pinkblue palette, Puerto Rico inset on power-dependency axis only | Map |
+| `fig2_top10_split_bars.png` | **Q1: Who's at the top** — Top-10 counties paired across hazard and power-dependency percentile axes | Bar chart |
+| `fig3_scatter_quadrants.png` | **Q1: Two-typology framing** — hazard × power-dependency scatter with quadrant cuts at the 50th-percentile thresholds | Scatter |
+| `fig4_lisa_cluster_map.png` | **Q1: Statistical hotspots** — LISA cluster map (HH/LL/HL/LH/ns); HH bloc = 676 counties | Map |
+| `fig5_regression_forest.png` | **Q2: Structural drivers** — spatial-error regression coefficient forest plot (income dominates) | Forest plot |
+
+### Interactive
 
 | File | Description |
 |------|-------------|
-| `vulnerability_map.png` | **Headline dual-percentile vulnerability index** (5-hazard composite × power-dependent DME rate), with top-5 counties annotated |
+| `grant_overview_dashboard_standalone.html` | **Interactive d3 dashboard** — KPI cards, layer-toggle choropleth (vulnerability index / hazard / power-dependency / absolute count), Stevens.pinkblue bivariate palette, Puerto Rico inset, South Florida regional pin. Single-file standalone (open in browser, no server). |
+| `docs/slide_deck.html` | **11-slide presentation deck** — self-contained HTML with arrow-key navigation, soft-teal accent on dark theme. Covers: gap → clinical hook → methodology → typologies → top-10 → statistical evidence → attributable burden → structural drivers → limitations → takeaway. |
 
 ### Diagnostic Choropleths (per-covariate, 9-hazard composite)
 
@@ -176,44 +249,48 @@ County-level maps of the contiguous United States:
 
 ```
 climate-disability-risk/
-├── README.md
+├── README.md                                       # ← canonical single-source narrative (this file)
+├── CLAUDE.md                                       # project context for analyst handoff
 ├── requirements.txt
 ├── data/
-│   ├── cms_dme_clean.csv                  # HHS emPOWER — electricity-dependent DME (3,233 counties)
-│   ├── NRI_Table_Counties.csv             # FEMA NRI v1.20 — 9 hazard risk scores (3,232 counties)
-│   ├── mme_dec2025_county_clean.csv       # MME Dec 2025 — enrollment + disability rate (3,278 counties)
-│   ├── POS_File_QIES_Q4_2025.csv         # Provider of Services Q4 2025
-│   ├── ct_fips_crosswalk.csv              # Connecticut FIPS reorganization crosswalk
-│   ├── part1_analysis_ready.csv           # Merged analysis-ready dataset (3,212 counties × 41 cols)
-│   ├── fema_hazard_clean.csv              # Filtered FEMA hazard scores
-│   ├── climate_disability_vulnerability.csv  # Headline dual-percentile vulnerability index (3,131 counties)
-│   ├── top25_vulnerability_dual_pctile.csv   # Top-25 convergent-risk counties (dual-percentile)
-│   └── cb_2022_us_county_5m/             # Census TIGER shapefiles (county boundaries)
+│   ├── part1_analysis_ready.csv                    # joined analysis-ready frame (3,212 × 41)
+│   ├── lisa_county_classification.csv              # per-county LISA label (3,099 CONUS counties)
+│   ├── acs_county_2022.csv                         # ACS 5-year (2022) covariates feeding regression
+│   ├── cms_dme_clean.csv                           # HHS emPOWER — electricity-dependent DME
+│   ├── NRI_Table_Counties.csv                      # FEMA NRI v1.20 — 9 hazard risk scores
+│   ├── mme_dec2025_county_clean.csv                # MME Dec 2025 — enrollment + disability rate
+│   ├── ct_fips_crosswalk.csv                       # Connecticut FIPS reorganization crosswalk
+│   ├── fema_hazard_clean.csv                       # Filtered FEMA hazard scores
+│   ├── climate_disability_vulnerability.csv        # Dual-percentile vulnerability index
+│   ├── top25_vulnerability_dual_pctile.csv         # Top-25 convergent-risk counties
+│   └── cb_2022_us_county_5m/                       # Census TIGER shapefiles
+├── notebooks/
+│   ├── part1_statistical_analysis.py               # Spatial pipeline: ρ, Moran's I, LISA, GM regression
+│   ├── recompute_vulnerability_dual_percentile.py  # Dual-percentile methodology
+│   └── fetch_acs_covariates.py                     # ACS 5-year (2022) county covariate fetch
 ├── visualizations/
-│   ├── choropleth_vuln_power_dependency.png
-│   ├── choropleth_vuln_o2_services.png
-│   ├── choropleth_vuln_home_health.png
-│   ├── choropleth_vuln_hospice.png
-│   ├── choropleth_vuln_any_healthcare.png
-│   ├── choropleth_vuln_disability.png
-│   ├── choropleth_composite_hazard.png
-│   ├── choropleth_dsbld_rate_raw.png
-│   ├── correlation_heatmap_6x10.png
-│   ├── top25_overlap_matrix.png
-│   ├── bump_chart_rankings.png
-│   ├── distributions_raw_vs_pctile.png
-│   └── rescaling_comparison_scatter.png
+│   ├── fig1_bivariate_choropleth.png               # ★ canonical Q1 visual
+│   ├── fig2_top10_split_bars.png                   # ★ top-10 ranking
+│   ├── fig3_scatter_quadrants.png                  # ★ two-typology framing
+│   ├── fig4_lisa_cluster_map.png                   # ★ statistical hotspots
+│   ├── fig5_regression_forest.png                  # ★ canonical Q2 visual
+│   ├── grant_overview_dashboard_standalone.html    # interactive d3 dashboard
+│   ├── build_grant_overview_visuals.py             # fig1–fig3 generator
+│   ├── build_fig4_lisa_map.py                      # fig4 generator
+│   ├── build_fig5_regression_forest.py             # fig5 generator
+│   ├── build_dashboard_payload.py                  # dashboard data prep
+│   ├── make_vulnerability_map.py                   # legacy headline map (superseded by fig1)
+│   └── (diagnostic per-covariate choropleths and rescaling-comparison panels)
 ├── docs/
-│   ├── mme_dec2025_profile.md             # MME data profiling report
-│   └── policy_brief.html                  # Policy brief (draft)
-├── Climate and Disabilities: Medicare Focus copy/
-│   ├── methodology_and_data_dictionary.md # Full methodology — Part 1 of 2
-│   ├── cms_data_pull_guide.md             # Download instructions for remaining CMS data
-│   └── medicare_variable_eda_report.md    # Exploratory data analysis report
-├── Marcalee Climate Health copy/
-│   ├── Grant Proposal -- DraftsProtocols/ # Grant proposal narrative and drafts
-│   └── Chapter 4.pdf                      # Alexander & Alexander (2025), Elsevier
-└── notebooks/                             # Analysis notebooks (in development)
+│   ├── policy_brief.html                           # ★ one-page two-column handout
+│   ├── slide_deck.html                             # ★ 11-slide self-contained presentation
+│   ├── grant_overview_and_proposal.docx            # ★ Word-format grant narrative
+│   ├── part1_statistical_findings.md               # ★ hard numbers for the spatial pipeline
+│   ├── analytical_part1b_methodology_pros_cons.md  # internal methodology decision log
+│   ├── notion_project_brief.md                     # Notion page source-of-truth
+│   └── mme_dec2025_profile.md                      # MME data profiling report
+├── Climate and Disabilities: Medicare Focus copy/  # legacy reference docs
+└── Marcalee Climate Health copy/                   # grant proposal source materials
 ```
 
 ## Known Limitations

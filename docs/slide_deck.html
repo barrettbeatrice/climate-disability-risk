@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Climate-Disability Convergent Risk — Part 1 Slide Deck</title>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --text: #ffffff;
+    --muted: #a0a0a0;
+    --card: #1a1a1a;
+    --border: #2a2a2a;
+    --accent: #14B8A6;          /* soft teal — health domain */
+    --accent-soft: #14B8A622;
+    --accent-line: #14B8A655;
+    --warn: #F59E0B;
+    --neg: #F43F5E;
+    --pos: #14B8A6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue",
+                 Arial, sans-serif;
+    overflow: hidden;
+  }
+  .deck {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+  }
+  .slide {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 60px;
+    overflow: hidden;
+  }
+  .slide.active { display: flex; }
+  .inner {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  h1 { font-size: 64px; font-weight: 800; line-height: 1.05; letter-spacing: -1.5px; }
+  h2 { font-size: 48px; font-weight: 700; line-height: 1.1; letter-spacing: -0.5px; }
+  h3 { font-size: 28px; font-weight: 600; }
+  .subtitle { font-size: 26px; color: var(--muted); margin-top: 18px; line-height: 1.4; }
+  .eyebrow {
+    font-size: 13px; font-weight: 700; letter-spacing: 2.4px;
+    color: var(--accent); text-transform: uppercase; margin-bottom: 22px;
+  }
+  .lead { font-size: 26px; line-height: 1.55; margin-top: 18px; color: #e0e0e0; }
+  .small { font-size: 18px; color: var(--muted); }
+
+  /* Slide counter + nav */
+  .counter {
+    position: fixed; right: 24px; bottom: 18px;
+    font-size: 12px; color: var(--muted);
+    font-variant-numeric: tabular-nums; letter-spacing: 1px;
+  }
+  .progress {
+    position: fixed; left: 0; bottom: 0; height: 3px;
+    background: var(--accent); transition: width 200ms ease;
+  }
+
+  /* Stat callout */
+  .stat-block { text-align: center; }
+  .stat-num {
+    font-size: 144px; font-weight: 800; color: var(--accent);
+    line-height: 0.95; letter-spacing: -3px;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-label { font-size: 22px; color: var(--muted); margin-top: 16px; }
+
+  /* Metric dashboard */
+  .metric-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 36px;
+  }
+  .metric-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px 22px;
+    text-align: left;
+  }
+  .metric-card .v {
+    font-size: 38px; font-weight: 800; color: var(--accent);
+    font-variant-numeric: tabular-nums; letter-spacing: -1px;
+  }
+  .metric-card .k {
+    font-size: 13px; color: var(--muted); text-transform: uppercase;
+    letter-spacing: 1.5px; margin-top: 12px; line-height: 1.4;
+  }
+
+  /* Card grid (2-3 cards) */
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+    margin-top: 36px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 14px;
+    padding: 30px;
+  }
+  .card .icon { font-size: 36px; margin-bottom: 14px; }
+  .card h3 { color: var(--text); margin-bottom: 10px; }
+  .card p { font-size: 18px; color: var(--muted); line-height: 1.55; }
+
+  /* Step flow */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    margin-top: 40px;
+  }
+  .step {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 18px;
+    text-align: left;
+    position: relative;
+  }
+  .step .n {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--accent); color: #0a0a0a;
+    font-weight: 800; font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 14px;
+  }
+  .step h4 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+  .step p { font-size: 13px; color: var(--muted); line-height: 1.45; }
+
+  /* Icon + label list */
+  .ilist { margin-top: 28px; display: flex; flex-direction: column; gap: 14px; }
+  .ilist li {
+    display: flex; align-items: flex-start; gap: 18px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px 22px;
+    list-style: none;
+  }
+  .ilist .ic {
+    flex: 0 0 32px;
+    font-size: 22px;
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .ilist .lab { font-size: 19px; line-height: 1.5; }
+  .ilist .lab strong { color: var(--accent); }
+
+  /* Comparison panel */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 60px 1fr;
+    gap: 18px;
+    align-items: stretch;
+    margin-top: 36px;
+  }
+  .compare .col {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 30px;
+  }
+  .compare .col.left  { border-left: 3px solid var(--neg); }
+  .compare .col.right { border-left: 3px solid var(--pos); }
+  .compare .col h3 { margin-bottom: 14px; font-size: 22px; }
+  .compare .col p { font-size: 17px; color: var(--muted); line-height: 1.6; }
+  .compare .vs {
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted); font-size: 14px; letter-spacing: 2px;
+  }
+
+  /* Quote block */
+  .quote {
+    background: var(--card);
+    border-left: 4px solid var(--accent);
+    border-radius: 12px;
+    padding: 36px 44px;
+    margin-top: 32px;
+  }
+  .quote .q { font-size: 28px; font-style: italic; line-height: 1.45; color: #f0f0f0; }
+  .quote .a { font-size: 16px; color: var(--muted); margin-top: 18px; letter-spacing: 1px; }
+
+  /* Top-10 table-as-visual */
+  .top-list { margin-top: 24px; }
+  .top-list table {
+    width: 100%; border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+  }
+  .top-list th, .top-list td {
+    padding: 11px 16px; text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-size: 17px;
+  }
+  .top-list th {
+    color: var(--muted); font-weight: 600; font-size: 12px;
+    letter-spacing: 1.6px; text-transform: uppercase;
+  }
+  .top-list .rk {
+    color: var(--accent); font-weight: 800;
+    width: 36px; font-size: 16px;
+  }
+  .top-list .vi {
+    color: var(--accent); font-weight: 700;
+    text-align: right;
+  }
+
+  /* Typology columns */
+  .typology {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 22px;
+    margin-top: 32px;
+  }
+  .typology .pane {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 30px;
+    border-top: 3px solid var(--accent);
+  }
+  .typology h3 { margin-bottom: 12px; font-size: 22px; }
+  .typology .pane .key { font-size: 14px; color: var(--accent);
+    text-transform: uppercase; letter-spacing: 1.6px; margin-bottom: 6px; }
+  .typology p { font-size: 16.5px; color: var(--muted); line-height: 1.55; }
+  .typology ul { margin-top: 14px; padding-left: 16px; }
+  .typology li { font-size: 16px; color: #e0e0e0; line-height: 1.7;
+    list-style: disc; }
+  .typology li::marker { color: var(--accent); }
+
+  /* Forest plot mini */
+  .forest { margin-top: 28px; }
+  .forest .row {
+    display: grid; grid-template-columns: 230px 1fr 110px;
+    align-items: center; gap: 18px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .forest .lab { font-size: 17px; }
+  .forest .ann { font-size: 14px; color: var(--muted);
+    font-variant-numeric: tabular-nums; text-align: right; }
+  .forest .bar-wrap {
+    position: relative; height: 26px;
+    background: linear-gradient(to right,
+      transparent 0%, transparent 49.7%,
+      var(--border) 49.7%, var(--border) 50.3%,
+      transparent 50.3%, transparent 100%);
+    border-radius: 6px;
+  }
+  .forest .bar {
+    position: absolute; top: 4px; height: 18px;
+    border-radius: 4px;
+  }
+  .forest .pt {
+    position: absolute; top: 5px; width: 16px; height: 16px;
+    border-radius: 50%;
+  }
+  .forest .pt.sig    { background: #3b4994; box-shadow: 0 0 0 2px #3b4994; }
+  .forest .pt.weak   { background: #be64ac; box-shadow: 0 0 0 2px #be64ac; }
+  .forest .pt.null   { background: #9b9b9b; box-shadow: 0 0 0 2px #9b9b9b; }
+
+  /* Title slide art */
+  .title-art {
+    position: absolute; right: -180px; top: -180px;
+    width: 720px; height: 720px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%,
+      var(--accent-soft) 0%, transparent 60%);
+    filter: blur(6px); pointer-events: none;
+  }
+  .corner-tag {
+    position: absolute; top: 32px; left: 32px;
+    font-size: 12px; letter-spacing: 2.6px;
+    color: var(--muted); text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+<div class="deck">
+
+<!-- 1. TITLE -->
+<section class="slide active">
+  <div class="title-art"></div>
+  <div class="corner-tag">Part 1 · Static Cross-Sectional Geospatial Analysis</div>
+  <div class="inner">
+    <div class="eyebrow">Climate-Disability Convergent Risk</div>
+    <h1>Where electricity-dependent disabled<br>populations meet climate hazard.</h1>
+    <p class="subtitle">A county-level convergent-risk analysis of <strong style="color:var(--accent)">2,960,586</strong> electricity-dependent Medicare beneficiaries against the FEMA National Risk Index — built to inform Dr. Marcalee Alexander's rehabilitation-preparedness grant.</p>
+    <p class="small" style="margin-top: 32px;">Alexander Lab · Marcus Neuroscience Institute · Baptist Health South Florida · April 2026</p>
+  </div>
+</section>
+
+<!-- 2. THE GAP -->
+<section class="slide">
+  <div class="inner">
+    <div class="eyebrow">The Gap</div>
+    <h2>The literature does not see disabled people in climate research.</h2>
+    <div class="stat-block" style="margin-top: 56px;">
+      <div class="stat-num">0 / 89</div>
+      <div class="stat-label">climate-health impact studies stratified by disability status<br>across 35 countries (Luyten et al., <em>Journal of Climate Change and Health</em>, 2023)</div>
+    </div>
+    <p class="lead" style="margin-top: 40px; text-align: center;">No published study has systematically mapped where electricity-dependent disabled populations are most concentrated relative to climate hazard exposure.</p>
+  </div>
+</section>
+
+<!-- 3. CLINICAL HOOK -->
+<section class="slide">
+  <div class="inner">
+    <div class="eyebrow">The Clinical Hook</div>
+    <h2>Why climate is dangerous to high-level SCI <em style="color:var(--accent); font-style:normal;">independent</em> of devices.</h2>
+    <ul class="ilist">
+      <li><div class="ic">🌡️</div><div class="lab"><strong>Autonomic dysfunction.</strong> SCI above T6 interrupts the autonomic nervous system's ability to thermoregulate.</div></li>
+      <li><div class="ic">🥶</div><div class="lab"><strong>Hyperthermia and hypothermia.</strong> The body cannot defend its core temperature even at mild ambient extremes.</div></li>
+      <li><div class="ic">⚡</div><div class="lab"><strong>Powered DME dependency.</strong> Ventilators, oxygen concentrators, powered wheelchairs, suction, IV infusion fail when the grid fails.</div></li>
+      <li><div class="ic">🌪️</div><div class="lab"><strong>Climate-driven outages.</strong> Extreme weather is the modern primary driver of large-scale grid disruption — and current frameworks do not address this convergence.</div></li>
+    </ul>
+  </div>
+</section>
+
+<!-- 4. METHODOLOGY -->
+<section class="slide">
+  <div class="inner">
+    <div class="eyebrow">Methodology</div>
+    <h2>A dual-percentile convergent-risk index.</h2>
+    <p class="lead">Equal-weighted mean of national percentile ranks of two independent axes — chosen so neither raw scale dominates the index.</p>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><h4>Hazard score</h4><p>FEMA NRI 5-hazard composite: hurricane, heat wave, wildfire, coastal flood, drought.</p></div>
+      <div class="step"><div class="n">2</div><h4>Power-dep rate</h4><p>HHS emPOWER electricity-dependent Medicare benes ÷ total Medicare benes × 100.</p></div>
+      <div class="step"><div class="n">3</div><h4>Percentile rank</h4><p>National percentile rank of each axis. Median power-dep ≈ 5%; median hazard ≈ 50.</p></div>
+      <div class="step"><div class="n">4</div><h4>Dual-percentile VI</h4><p>Equal-weighted mean of the two ranks. Top of index = both axes simultaneously elevated.</p></div>
+      <div class="step"><div class="n">5</div><h4>Spatial pipeline</h4><p>Spearman ρ, Moran's I, LISA, attributable burden, spatial-error regression.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. WHERE CONVERGENT RISK CONCENTRATES -->
+<section class="slide">
+  <div class="inner">
+    <div class="eyebrow">Where Convergent Risk Concentrates</div>
+    <h2>Two distinct structural typologies.</h2>
+    <div class="typology">
+      <div class="pane">
+        <div class="key">Typology A</div>
+        <h3>Intermountain drought-and-dependency corridor</h3>
+        <p>Concentrated electricity-dependent populations paired with regional drought, wildfire, and heat-wave hazard. <strong style="color:var(--accent)">Dominates the national top-25.</strong></p>
+        <ul>
+          <li>San Juan NM, El Paso CO, Bernalillo NM</li>
+          <li>Sandoval NM, Adams CO, Mesa CO</li>
+          <li>Pueblo CO, Iron UT, Millard UT, Garfield UT</li>
+        </ul>
+      </div>
+      <div class="pane">
+        <div class="key">Typology B</div>
+        <h3>Southeast hurricane-and-coastal-flood coast</h3>
+        <p>Top-1% FEMA hazard percentiles paired with the largest absolute electricity-dependent counts at that hazard band. <strong style="color:var(--accent)">Includes the grant-holder's own service area.</strong></p>
+        <ul>
+          <li>Palm Beach FL (hazard 99.8) — top 1%</li>
+          <li>Miami-Dade FL (hazard 99.7) — 20,443 benes</li>
+          <li>Hillsborough FL, Broward FL</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6. TOP 10 -->
+<section class="slide">
+  <div class="inner">
+    <div class="eyebrow">Top 10 Most Vulnerable Counties</div>
+    <h2>All 10 sit in NM, CO, or UT.</h2>
+    <div class="top-list">
+      <table>
+        <thead>
+          <tr><th class="rk">#</th><th>County</th><th>State</th><th>Hazard pctile</th><th>Power pctile</th><th class="vi">Vuln. Index</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="rk">1</td><td>San Juan</td><td>NM</td><td>98.3</td><td>95.6</td><td class="vi">96.9</td></tr>
+          <tr><td class="rk">2</td><td>El Paso</td><td>CO</td><td>92.0</td><td>97.1</td><td class="vi">94.5</td></tr>
+          <tr><td class="rk">3</td><td>Bernalillo</td><td>NM</td><td>97.4</td><td>91.0</td><td class="vi">94.2</td></tr>
+          <tr><td class="rk">4</td><td>Sandoval</td><td>NM</td><td>97.2</td><td>91.1</td><td class="vi">94.1</td></tr>
+          <tr><td class="rk">5</td><td>Adams</td><td>CO</td><td>92.0</td><td>95.6</td><td class="vi">93.8</td></tr>
+          <tr><td class="rk">6</td><td>Chaves</td><td>NM</td><td>96.4</td><td>90.4</td><td class="vi">93.4</td></tr>
+          <tr><td class="rk">7</td><td>Utah</td><td>UT</td><td>98.4</td><td>88.2</td><td class="vi">93.3</td></tr>
+          <tr><td class="rk">8</td><td>Mesa</td><td>CO</td><td>92.6</td><td>93.3</td><td class="vi">92.9</td></tr>
+          <tr><td class="rk">9</td><td>Santa Fe</td><td>NM</td><td>95.7</td><td>89.7</td><td class="vi">92.7</td></tr>
+          <tr><td class="rk">10</td><td>Weber</td><td>UT</td><td>91.4</td><td>93.7</td><td class="vi">92.6</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small" style="margin-top: 18px;">Dual-percentile vulnerability index. CONUS counties (n = 3,099); Puerto Rico excluded — FEMA NRI <em>Insufficient Data</em> for all 78 municipios.</p>
+  </div>
+</section>
+
+<!-- 7. STATISTICAL EVIDENCE -->
+<section class="slide">
+  <div class="inner">
+    <div class="eyebrow">Statistical Evidence</div>
+    <h2>The clustering is real, not a visual artifact.</h2>
+    <div class="metric-row">
+      <div class="metric-card">
+        <div class="v">−0.218</div>
+        <div class="k">Spearman ρ <br>hazard × power-dep<br>95% CI [−0.250, −0.181]</div>
+      </div>
+      <div class="metric-card">
+        <div class="v">+0.707</div>
+        <div class="k">Global Moran's I <br>vulnerability index<br>p &lt; 0.001 (999 perms)</div>
+      </div>
+      <div class="metric-card">
+        <div class="v">676</div>
+        <div class="k">LISA HH counties<br>(p &lt; 0.05)<br>convergent-vulnerability bloc</div>
+      </div>
+      <div class="metric-card">
+        <div class="v">578</div>
+        <div class="k">LISA LL counties<br>(p &lt; 0.05)<br>low-convergent-risk bloc</div>
+      </div>
+    </div>
+    <p class="lead" style="margin-top: 36px;">The two pathways into convergent risk — climate hazard density and power-dependency density — are statistically <strong style="color:var(--accent)">near-independent</strong> at the county level. The two-typology framing is recovered as a single coefficient.</p>
+  </div>
+</section>
+
+<!-- 8. ATTRIBUTABLE BURDEN -->
+<section class="slide">
+  <div class="inner">
+    <div class="eyebrow">Attributable Burden</div>
+    <h2>How many beneficiaries live in the highest-hazard counties?</h2>
+    <div class="stat-block" style="margin-top: 40px;">
+      <div class="stat-num">793,431</div>
+      <div class="stat-label">electricity-dependent Medicare beneficiaries — <strong style="color:var(--accent)">26.8% of the national total</strong> — live in counties at or above the 90th percentile of FEMA hazard.</div>
+    </div>
+    <div class="metric-row" style="grid-template-columns: repeat(3, 1fr); margin-top: 38px;">
+      <div class="metric-card"><div class="v">503,131</div><div class="k">at or above P95 hazard<br>17.0% of national total</div></div>
+      <div class="metric-card"><div class="v">148,276</div><div class="k">at or above P99 hazard<br>5.0% of national total</div></div>
+      <div class="metric-card"><div class="v">~49,000</div><div class="k">in Puerto Rico — invisible to the federal hazard framework</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 9. STRUCTURAL DRIVERS — forest plot mini -->
+<section class="slide">
+  <div class="inner">
+    <div class="eyebrow">Q2 — Structural Drivers</div>
+    <h2>Income dominates. Age and poverty fall out.</h2>
+    <p class="small">Spatial-error regression of dual-percentile VI on ACS 5-year (2022) covariates + state fixed effects. λ = +0.604, OLS R² = 0.581, spatial pseudo-R² = 0.548, n = 3,098.</p>
+    <div class="forest">
+      <div class="row">
+        <div class="lab">log Median Income</div>
+        <div class="bar-wrap"><div class="bar" style="left: 8%; right: 50%; background: linear-gradient(90deg, transparent, #3b4994aa);"></div><div class="pt sig" style="left: 8%;"></div></div>
+        <div class="ann">−33.0 ··· p&lt;0.001</div>
+      </div>
+      <div class="row">
+        <div class="lab">log Medicare Pop</div>
+        <div class="bar-wrap"><div class="bar" style="left: 50%; right: 28%; background: linear-gradient(270deg, transparent, #3b4994aa);"></div><div class="pt sig" style="left: 72%;"></div></div>
+        <div class="ann">+7.24 ··· p&lt;0.001</div>
+      </div>
+      <div class="row">
+        <div class="lab">Pct Uninsured</div>
+        <div class="bar-wrap"><div class="bar" style="left: 50%; right: 47%; background: linear-gradient(270deg, transparent, #3b4994aa);"></div><div class="pt sig" style="left: 53%;"></div></div>
+        <div class="ann">+0.22 ··· p&lt;0.001</div>
+      </div>
+      <div class="row">
+        <div class="lab">Pct 65+</div>
+        <div class="bar-wrap"><div class="pt null" style="left: 49%;"></div></div>
+        <div class="ann">−0.08 ··· p=0.13</div>
+      </div>
+      <div class="row">
+        <div class="lab">Pct Below Poverty</div>
+        <div class="bar-wrap"><div class="pt null" style="left: 50.3%;"></div></div>
+        <div class="ann">+0.05 ··· p=0.43</div>
+      </div>
+    </div>
+    <p class="small" style="margin-top: 22px;">Standardized β. Negative β (left of zero) → variable is associated with <em style="color:var(--accent); font-style:normal;">lower</em> convergent vulnerability conditional on FEMA hazard, regional context, and Medicare-population scale.</p>
+  </div>
+</section>
+
+<!-- 10. LIMITATIONS -->
+<section class="slide">
+  <div class="inner">
+    <div class="eyebrow">Limitations &amp; Caveats</div>
+    <h2>What this map does not measure.</h2>
+    <ul class="ilist">
+      <li><div class="ic">📍</div><div class="lab"><strong>Cross-sectional only.</strong> Maps where convergent risk is structurally located — not behavioral adaptation, recovery, or coping. Those constructs require event-time data and are reserved for Phase 2.</div></li>
+      <li><div class="ic">🧬</div><div class="lab"><strong>SCI is not isolatable.</strong> Operational denominator is electricity-dependent Medicare beneficiaries (HHS emPOWER); SCI-specific identification requires CMS ResDAC DUA — out of scope for Part 1.</div></li>
+      <li><div class="ic">🧓</div><div class="lab"><strong>Medicare undercount.</strong> Working-age people with disabilities not on Medicare are excluded from the denominator. The 24-month SSDI waiting period further narrows the cohort.</div></li>
+      <li><div class="ic">🇵🇷</div><div class="lab"><strong>Puerto Rico hazard gap.</strong> FEMA NRI returns <em>Insufficient Data</em> for all 78 PR municipios — shown on the power-dependency axis only.</div></li>
+    </ul>
+  </div>
+</section>
+
+<!-- 11. TAKEAWAY -->
+<section class="slide">
+  <div class="inner">
+    <div class="eyebrow">Takeaway</div>
+    <h2>One map. Two pathways. A clinical-grade case for disability-inclusive preparedness.</h2>
+    <div class="quote">
+      <div class="q">Counties in the top vulnerability quartile — and PR municipios on the absolute-count axis — should be prioritized for preparedness protocols designed around the survival-critical electricity dependency the data actually measures, not generic "vulnerable population" framings.</div>
+      <div class="a">— Part 1 Policy Brief, Climate-Disability Convergent Risk Analysis</div>
+    </div>
+    <ul class="ilist" style="margin-top: 28px;">
+      <li><div class="ic">📊</div><div class="lab"><strong>Phase 2 — International extension.</strong> WHO rehab access × World Bank electricity access × IPCC regional projections; integrated with InSCI (31 countries, 15,051 participants).</div></li>
+      <li><div class="ic">⌚</div><div class="lab"><strong>Phase 3 — Smart device monitoring.</strong> Prospective disability-specific climate impact tracking per Alexander &amp; Alexander (2025).</div></li>
+      <li><div class="ic">📁</div><div class="lab"><strong>Repository:</strong> <span style="color:var(--accent)">github.com/barrettbeatrice/climate-disability-risk</span></div></li>
+    </ul>
+  </div>
+</section>
+
+</div>
+
+<div class="counter"><span id="cnum">1</span> / <span id="ctot">11</span></div>
+<div class="progress" id="progress" style="width: 9%;"></div>
+
+<script>
+  (function () {
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const total = slides.length;
+    const cnum = document.getElementById('cnum');
+    const ctot = document.getElementById('ctot');
+    const prog = document.getElementById('progress');
+    ctot.textContent = total;
+    let i = 0;
+    function go(n) {
+      i = Math.max(0, Math.min(total - 1, n));
+      slides.forEach((s, k) => s.classList.toggle('active', k === i));
+      cnum.textContent = i + 1;
+      prog.style.width = (((i + 1) / total) * 100).toFixed(1) + '%';
+    }
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { go(i + 1); e.preventDefault(); }
+      else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { go(i - 1); e.preventDefault(); }
+      else if (e.key === 'Home') { go(0); }
+      else if (e.key === 'End') { go(total - 1); }
+    });
+    document.addEventListener('click', () => go(i + 1));
+    go(0);
+  })();
+</script>
+</body>
+</html>
